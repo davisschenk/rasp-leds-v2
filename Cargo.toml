@@ -1,0 +1,23 @@
+[package]
+name = "rasp-leds-v2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.51"
+controller = {path = "pkg/controller"}
+color = {path = "pkg/color"}
+
+
+[workspace]
+members = [
+    "pkg/controller",
+    "pkg/color"
+]
+
+[features]
+default = ["simulate"]
+hardware = ["controller/hardware"]
+simulate = ["controller/simulate"]
