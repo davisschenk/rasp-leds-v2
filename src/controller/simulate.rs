@@ -3,9 +3,9 @@ use std::thread;
 #[cfg(feature = "simulate")]
 use minifb::{Key, Window, WindowOptions};
 
+use crate::color::Color;
 use crate::controller::*;
 use anyhow::Result;
-use color::Color;
 use std::sync::{mpsc, Arc, Mutex};
 
 // const CELL_SIZE: usize = 25;

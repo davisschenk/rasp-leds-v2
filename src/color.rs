@@ -3,7 +3,6 @@ pub enum Color {
     RGB(u8, u8, u8),
 }
 
-
 impl Into<u32> for Color {
     fn into(self) -> u32 {
         match self {
@@ -19,4 +18,3 @@ impl Into<[u8; 4]> for &Color {
         }
     }
 }
-

@@ -7,17 +7,11 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.51"
-controller = {path = "pkg/controller"}
-color = {path = "pkg/color"}
-
-
-[workspace]
-members = [
-    "pkg/controller",
-    "pkg/color"
-]
+minifb = { version = "^0.19.3", optional = true }
+rs_ws281x = { version = "*", optional = true }
+enum_dispatch = "^0.3.7"
 
 [features]
 default = ["simulate"]
-hardware = ["controller/hardware"]
-simulate = ["controller/simulate"]
+simulate = ["minifb"]
+hardware = ["rs_ws281x"]
