@@ -15,3 +15,9 @@ pub mod rainbow;
 
 #[cfg(feature = "patterns")]
 pub use rainbow::*;
+
+#[cfg(feature = "patterns")]
+pub mod meteor;
+
+#[cfg(feature = "patterns")]
+pub use meteor::*;

@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum Color {
     RGB(u8, u8, u8),
 }
@@ -13,6 +13,18 @@ impl Color {
     pub fn to_arr(&self) -> [u8; 4] {
         match self {
             Color::RGB(r, g, b) => [*b, *g, *r, 0],
+        }
+    }
+
+    pub fn fade_to_black(&self, amt: u8) -> Color {
+        match self {
+            Color::RGB(r, g, b) => {
+                Color::RGB(
+                    if *r <= 10 { 0 } else {*r - (*r as f64 * amt as f64 / 255.0) as u8},
+                    if *b <= 10 { 0 } else {*b - (*b as f64 * amt as f64 / 255.0) as u8},
+                    if *g <= 10 { 0 } else {*g - (*g as f64 * amt as f64 / 255.0) as u8},
+                )
+            }
         }
     }
 }
