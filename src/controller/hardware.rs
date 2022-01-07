@@ -1,11 +1,17 @@
-use crate::controller::*;
-use color::*;
+use super::LedController;
+use crate::color::*;
 use rs_ws281x::{ChannelBuilder, Controller as RaspController, ControllerBuilder, StripType};
 
 pub struct Controller {
     data: Vec<Color>,
     count: usize,
     controller: RaspController,
+}
+
+impl Default for Controller {
+    fn default() -> Self {
+        Self::new(300, 18, 255)
+    }
 }
 
 impl Controller {

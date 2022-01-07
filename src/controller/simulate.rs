@@ -3,8 +3,8 @@ use std::thread;
 #[cfg(feature = "simulate")]
 use minifb::{Key, Window, WindowOptions};
 
+use super::LedController;
 use crate::color::Color;
-use crate::controller::*;
 use anyhow::Result;
 use std::sync::{mpsc, Arc, Mutex};
 

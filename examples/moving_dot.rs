@@ -1,4 +1,5 @@
 use rasp_leds_v2::{Color, Controller, MovingDot, Pattern};
+
 use std::{thread::sleep, time::Duration};
 
 fn main() {
@@ -13,6 +14,8 @@ fn main() {
         tick_cycle: 150,
         color: Color::RGB(255, 0, 0),
     };
+
+    pattern.init(&mut c).unwrap();
 
     for i in 0..u64::MAX {
         pattern.start_tick(i, &mut c).unwrap();

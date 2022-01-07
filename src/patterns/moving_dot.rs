@@ -19,13 +19,16 @@ impl Pattern for MovingDot {
     }
 
     fn tick(&mut self, tick: u64, controller: &mut Controller) -> Result<()> {
+        let count = controller.get_count();
         let leds = controller.get_data();
 
         leds[tick as usize] = self.color;
 
         if tick > 0 {
             leds[(tick - 1) as usize] = Color::RGB(0, 0, 0);
-        };
+        } else {
+            leds[count - 1] = Color::RGB(0, 0, 0);
+        }
 
         controller.update()
     }
