@@ -49,6 +49,7 @@ impl LedController for Controller {
         }
 
         self.controller.render().unwrap();
+        Ok(())
     }
 
     fn get_count(&self) -> usize {
