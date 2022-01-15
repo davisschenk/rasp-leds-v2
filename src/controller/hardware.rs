@@ -45,7 +45,7 @@ impl LedController for Controller {
 
     fn update(&mut self) -> anyhow::Result<()> {
         for (led, color) in self.controller.leds_mut(0).iter_mut().zip(self.data.iter()) {
-            *led = color.into();
+            *led = color.to_arr();
         }
 
         Ok(())
