@@ -6,7 +6,7 @@ fn main() {
     let mut c = Controller::new(150, 25);
 
     #[cfg(feature = "hardware")]
-    let mut c = Controller::new(150, 18, 255);
+    let mut c = Controller::new(300, 18, 255);
 
     let mut pattern = Meteor {
         tick_rate: 100,
