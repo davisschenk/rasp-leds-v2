@@ -18,13 +18,23 @@ impl Color {
 
     pub fn fade_to_black(&self, amt: u8) -> Color {
         match self {
-            Color::RGB(r, g, b) => {
-                Color::RGB(
-                    if *r <= 10 { 0 } else {*r - (*r as f64 * amt as f64 / 255.0) as u8},
-                    if *b <= 10 { 0 } else {*b - (*b as f64 * amt as f64 / 255.0) as u8},
-                    if *g <= 10 { 0 } else {*g - (*g as f64 * amt as f64 / 255.0) as u8},
-                )
-            }
+            Color::RGB(r, g, b) => Color::RGB(
+                if *r <= 10 {
+                    0
+                } else {
+                    *r - (*r as f64 * amt as f64 / 255.0) as u8
+                },
+                if *b <= 10 {
+                    0
+                } else {
+                    *b - (*b as f64 * amt as f64 / 255.0) as u8
+                },
+                if *g <= 10 {
+                    0
+                } else {
+                    *g - (*g as f64 * amt as f64 / 255.0) as u8
+                },
+            ),
         }
     }
 }

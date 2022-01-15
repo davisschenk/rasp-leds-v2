@@ -1,4 +1,4 @@
-use rasp_leds_v2::{Color, Controller, Meteor, Pattern, LedController};
+use rasp_leds_v2::{Color, Controller, Meteor, Pattern};
 use std::{thread::sleep, time::Duration};
 
 fn main() {

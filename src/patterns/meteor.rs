@@ -10,11 +10,11 @@ pub struct Meteor {
     pub color: Color,
     pub random_decay: bool,
     pub decay: u8,
-    pub size: u8
+    pub size: u8,
 }
 
 impl Pattern for Meteor {
-    fn init(&mut self, controller: &mut Controller) -> Result<()>{
+    fn init(&mut self, controller: &mut Controller) -> Result<()> {
         self.tick_cycle = controller.get_count() as u64 + self.size as u64;
         Ok(())
     }
@@ -38,9 +38,9 @@ impl Pattern for Meteor {
             }
         }
 
-        for i in tick..tick+self.size as u64 {
-            if i < count as u64{
-                    data[i as usize] = self.color;
+        for i in tick..tick + self.size as u64 {
+            if i < count as u64 {
+                data[i as usize] = self.color;
             }
         }
 
