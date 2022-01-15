@@ -11,8 +11,8 @@ fn main() {
     let mut pattern = Meteor {
         tick_rate: 100,
         tick_cycle: 10,
-        color: Color::RGB(255, 0, 0),
-        random_decay: false,
+        color: Color::RGB(255, 0, 255),
+        random_decay: true,
         decay: 32,
         size: 18,
     };
