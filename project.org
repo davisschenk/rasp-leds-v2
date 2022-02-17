@@ -1,0 +1,40 @@
+#+TITLE: Rasp Leds V2
+#+AUTHOR: Davis Schenkenberger
+
+* Goals
+** TODO API Control
+** TODO Hardware or Simulation based on feature
+** TODO Fairly Efficient
+
+* Design
+** Parts
+*** [[file:src/controller/controller.rs::pub trait LedController {][Controller]]
+A higher level abstraction for controlling an LED Strip, whether on hardware or virtual
+*** Runner
+An abstraction that provides a way to control the led strip using
+
+* Scratch
+** Changing value in enum
+#+begin_src rust
+#[derive(Debug)]
+enum Stuff {
+    _Other,
+    Value { num: u64 },
+}
+
+fn main() {
+    let mut thing = Stuff::Value { num: 10 };
+
+    println!("First: {thing:?}");
+
+    if let Stuff::Value { ref mut num } = thing {
+        *num += 1;
+    }
+
+    println!("Second: {thing:?}");
+}
+#+end_src
+
+#+RESULTS:
+: First: Value { num: 10 }
+: Second: Value { num: 11 }

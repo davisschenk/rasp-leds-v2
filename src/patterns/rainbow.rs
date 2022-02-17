@@ -1,7 +1,8 @@
 use crate::controller::{Controller, LedController};
-use crate::patterns::Pattern;
+use crate::patterns::RunnablePattern;
 use anyhow::Result;
 
+#[derive(Debug)]
 pub struct RainbowCycle {
     pub tick_rate: u64,
 }
@@ -12,7 +13,7 @@ impl RainbowCycle {
     }
 }
 
-impl Pattern for RainbowCycle {
+impl RunnablePattern for RainbowCycle {
     fn tick_rate(&self) -> u64 {
         self.tick_rate
     }

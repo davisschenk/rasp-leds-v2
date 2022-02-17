@@ -1,15 +1,16 @@
 use crate::color::Color;
 use crate::controller::{Controller, LedController};
-use crate::patterns::Pattern;
+use crate::patterns::RunnablePattern;
 use anyhow::Result;
 
+#[derive(Debug)]
 pub struct MovingDot {
     pub tick_rate: u64,
     pub tick_cycle: u64,
     pub color: Color,
 }
 
-impl Pattern for MovingDot {
+impl RunnablePattern for MovingDot {
     fn tick_rate(&self) -> u64 {
         self.tick_rate
     }

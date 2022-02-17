@@ -13,12 +13,10 @@ enum_dispatch = "^0.3.7"
 rand = "0.8.4"
 
 [features]
-default = ["simulate", "patterns"]
+default = ["simulate"]
 simulate = ["minifb"]
 hardware = ["rs_ws281x"]
-patterns = []
 
 [[example]]
 name = "moving_dot"
-required-features = ["patterns"]
 path = "examples/moving_dot.rs"

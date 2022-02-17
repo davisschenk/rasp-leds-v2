@@ -1,9 +1,10 @@
 use crate::color::Color;
 use crate::controller::{Controller, LedController};
-use crate::patterns::Pattern;
+use crate::patterns::RunnablePattern;
 use anyhow::Result;
 use rand::Rng;
 
+#[derive(Debug)]
 pub struct Meteor {
     pub tick_rate: u64,
     pub tick_cycle: u64,
@@ -13,7 +14,7 @@ pub struct Meteor {
     pub size: u8,
 }
 
-impl Pattern for Meteor {
+impl RunnablePattern for Meteor {
     fn init(&mut self, controller: &mut Controller) -> Result<()> {
         self.tick_cycle = controller.get_count() as u64 + self.size as u64;
         Ok(())
