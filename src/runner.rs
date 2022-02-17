@@ -1,4 +1,4 @@
-use crate::{Pattern, RunnablePattern, controller::*};
+use crate::{controller::*, Pattern, RunnablePattern};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -40,7 +40,7 @@ impl Runner for LedRunner {
     }
 
     fn run_pattern(&mut self, pattern: Pattern) {
-        self.sender.send(State::Pattern{pattern}).unwrap();
+        self.sender.send(State::Pattern { pattern }).unwrap();
     }
 
     fn set_idle(&mut self) {
@@ -76,7 +76,7 @@ struct InnerRunner {
     controller: TSController,
     state: TSState,
     receiver: MessageReceiver,
-    tick: Arc<Mutex<u64>>
+    tick: Arc<Mutex<u64>>,
 }
 
 impl InnerRunner {
@@ -97,7 +97,7 @@ impl InnerRunner {
             controller: Arc::new(Mutex::new(controller)),
             state: Arc::new(Mutex::new(State::Idle)),
             receiver,
-            tick: Arc::new(Mutex::new(0u64))
+            tick: Arc::new(Mutex::new(0u64)),
         }
     }
 

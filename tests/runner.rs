@@ -12,23 +12,15 @@ fn test_runner() {
 
     runner.start();
 
-    let pattern = MovingDot {
+    let pattern = Meteor {
         tick_rate: 100,
         tick_cycle: 150,
-        color: Color::RGB(255, 0, 0),
+        color: Color::RGB(255, 0, 255),
+        random_decay: true,
+        decay: 32,
+        size: 18,
     };
 
-    runner.run_pattern(Pattern::MovingDot(pattern));
-    thread::sleep(Duration::from_secs(10));
-
-    println!("changing pattern");
-
-    let pattern = MovingDot {
-        tick_rate: 100,
-        tick_cycle: 150,
-        color: Color::RGB(255, 255, 0),
-    };
-
-    runner.run_pattern(Pattern::MovingDot(pattern));
-    thread::sleep(Duration::from_secs(10));
+    runner.run_pattern(Pattern::Meteor(pattern));
+    thread::sleep(Duration::from_secs(100))
 }

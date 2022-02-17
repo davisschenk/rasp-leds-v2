@@ -3,8 +3,24 @@
 
 * Goals
 ** TODO API Control
+*** Endpoints
+- Pattern
+- On/Off/Toggle
+- Command History?
+- Custom Pattern
+  Be able to set individual LEDs then add movements
+
 ** TODO Hardware or Simulation based on feature
 ** TODO Fairly Efficient
+** TODO Pattern [3/7]
+*** DONE Meteor
+*** DONE Moving Dot
+*** DONE Rainbow
+*** TODO Heart Rate
+Connecting to watch using ANT+
+*** TODO Timer
+*** TODO Alarm
+*** TODO Custom
 
 * Design
 ** Parts
