@@ -1,4 +1,8 @@
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 #[derive(Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Color {
     RGB(u8, u8, u8),
 }

@@ -2,6 +2,9 @@ use crate::controller::Controller;
 use anyhow::Result;
 use enum_dispatch::enum_dispatch;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 pub mod moving_dot;
 pub use moving_dot::*;
 
@@ -13,6 +16,7 @@ pub use meteor::*;
 
 #[derive(Debug)]
 #[enum_dispatch(RunnablePattern)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Pattern {
     MovingDot(MovingDot),
     RainbowCycle(RainbowCycle),

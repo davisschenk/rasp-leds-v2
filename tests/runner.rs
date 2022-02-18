@@ -22,5 +22,14 @@ fn test_runner() {
     };
 
     runner.run_pattern(Pattern::Meteor(pattern));
-    thread::sleep(Duration::from_secs(100))
+    thread::sleep(Duration::from_secs(10));
+
+    runner.off();
+    thread::sleep(Duration::from_secs(3));
+    runner.on();
+    thread::sleep(Duration::from_secs(3));
+    runner.power();
+    thread::sleep(Duration::from_secs(3));
+    runner.power();
+    thread::sleep(Duration::from_secs(10));
 }

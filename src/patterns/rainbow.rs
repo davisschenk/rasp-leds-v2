@@ -2,7 +2,11 @@ use crate::controller::{Controller, LedController};
 use crate::patterns::RunnablePattern;
 use anyhow::Result;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct RainbowCycle {
     pub tick_rate: u64,
 }

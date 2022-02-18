@@ -4,7 +4,11 @@ use crate::patterns::RunnablePattern;
 use anyhow::Result;
 use rand::Rng;
 
+#[cfg(feature = "serde")]
+use serde::{Serialize, Deserialize};
+
 #[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Meteor {
     pub tick_rate: u64,
     pub tick_cycle: u64,

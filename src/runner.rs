@@ -4,22 +4,31 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-type TSController = Arc<Mutex<Controller>>;
-type TSState = Arc<Mutex<State>>;
-type MessageSender = mpsc::Sender<State>;
-type MessageReceiver = mpsc::Receiver<State>;
+type MessageSender = mpsc::Sender<Command>;
+type MessageReceiver = mpsc::Receiver<Command>;
 
 // type ResultSender = mpsc::Sender<LedResponse>;
 // type ResultReceiver = mpsc::Receiver<LedResponse>;
 
+#[derive(Debug)]
 enum State {
     Idle,
     Pattern { pattern: Pattern },
 }
 
+#[derive(Debug)]
+enum Command {
+    On,
+    Off,
+    Power,
+    Pattern { pattern: Pattern },
+}
+
 pub trait Runner {
     fn run_pattern(&mut self, pattern: Pattern);
-    fn set_idle(&mut self);
+    fn off(&mut self);
+    fn on(&mut self);
+    fn power(&mut self);
     fn start(&mut self);
 }
 
@@ -40,15 +49,29 @@ impl Runner for LedRunner {
     }
 
     fn run_pattern(&mut self, pattern: Pattern) {
-        self.sender.send(State::Pattern { pattern }).unwrap();
+        self.send_message(Command::Pattern { pattern });
     }
 
-    fn set_idle(&mut self) {
-        self.sender.send(State::Idle).unwrap();
+    fn off(&mut self) {
+        self.send_message(Command::Off);
+    }
+
+    fn on(&mut self) {
+        self.send_message(Command::On)
+    }
+
+    fn power(&mut self) {
+        self.send_message(Command::Power)
     }
 }
 
 impl LedRunner {
+    /// Create a new Virtual `LedRunner`
+    ///
+    /// # Arguments
+    ///
+    /// * `count` - The number of virtual leds
+    /// * `cell_size` - The size in pixels for each virtual led
     #[cfg(feature = "simulate")]
     pub fn new(count: usize, cell_size: usize) -> Self {
         let (sender, reciever) = mpsc::channel();
@@ -59,6 +82,13 @@ impl LedRunner {
         }
     }
 
+    /// Create a new Hardware `LedRunner`
+    ///
+    /// # Arguments
+    ///
+    /// * `count` - The number of leds on the strip
+    /// * `pin` - The raspberry pin the leds are connected too
+    /// * `brightness` - The base brightness to run the lights at
     #[cfg(feature = "hardware")]
     pub fn new(count: usize, pin: i32, brightness: u8) -> Self {
         let (sender, reciever) = mpsc::channel();
@@ -70,64 +100,93 @@ impl LedRunner {
             sender,
         }
     }
+
+    fn send_message(&self, command: Command) {
+        self.sender.send(command).unwrap();
+    }
 }
 
 struct InnerRunner {
-    controller: TSController,
-    state: TSState,
+    controller: Controller,
+    state: State,
     receiver: MessageReceiver,
-    tick: Arc<Mutex<u64>>,
+    tick: u64,
+    past_states: Vec<State>,
 }
 
 impl InnerRunner {
     #[cfg(feature = "simulate")]
-    pub fn new(recv: MessageReceiver, count: usize, cell_size: usize) -> Self {
+    fn new(recv: MessageReceiver, count: usize, cell_size: usize) -> Self {
         let controller = Controller::new(count, cell_size);
         Self::from_controller(controller, recv)
     }
 
     #[cfg(feature = "hardware")]
-    pub fn new(recv: MessageReceiver, count: usize, pin: i32, brightness: u8) -> Self {
+    fn new(recv: MessageReceiver, count: usize, pin: i32, brightness: u8) -> Self {
         let controller = Controller::new(count, pin, brightness);
         Self::from_controller(controller, recv)
     }
 
     fn from_controller(controller: Controller, receiver: MessageReceiver) -> Self {
         Self {
-            controller: Arc::new(Mutex::new(controller)),
-            state: Arc::new(Mutex::new(State::Idle)),
+            controller: controller,
+            state: State::Idle,
             receiver,
-            tick: Arc::new(Mutex::new(0u64)),
+            tick: 0u64,
+            past_states: vec![],
         }
     }
 
     pub fn main_loop(&mut self) {
         self.recv_message(false);
 
-        if let Ok(mut state) = self.state.lock() {
-            match &mut *state {
-                State::Idle => self.recv_message(true),
-                State::Pattern { ref mut pattern } => self.tick_pattern(pattern),
-            }
+        match &self.state {
+            State::Idle => self.recv_message(true),
+            State::Pattern { .. } => self.tick_pattern(),
         }
     }
 
-    fn recv_message(&self, blocking: bool) {
-        if let Ok(mut state) = self.state.lock() {
-            if blocking {
-                *state = self.receiver.recv().unwrap();
-            } else if let Ok(new_state) = self.receiver.try_recv() {
-                *state = new_state;
-            }
+    /// Recieve a message from the reciever and change internal state
+    ///
+    /// # Arguments
+    /// * `blocking` - Whether or not to wait for a message to set the state
+    fn recv_message(&mut self, blocking: bool) {
+        if blocking {
+            let command = self.receiver.recv().unwrap();
+            let new_state = self.map_command_to_state(command);
+            self.change_state(new_state)
+        } else if let Ok(command) = self.receiver.try_recv() {
+            let new_state = self.map_command_to_state(command);
+            self.change_state(new_state);
         }
     }
 
-    fn tick_pattern(&self, pattern: &mut Pattern) {
-        if let (Ok(mut controller), Ok(mut tick)) = (self.controller.lock(), self.tick.lock()) {
-            pattern.start_tick(*tick, &mut controller).unwrap();
-            *tick += 1;
+    fn map_command_to_state(&mut self, command: Command) -> State {
+        match command {
+            Command::On => self.past_states.pop().unwrap_or(State::Idle),
+            Command::Off => State::Idle,
+            Command::Power => match self.state {
+                State::Idle => self.past_states.pop().unwrap_or(State::Idle),
+                _ => State::Idle,
+            },
+            Command::Pattern { pattern } => State::Pattern { pattern },
         }
+    }
 
-        thread::sleep(Duration::from_millis(pattern.tick_rate()))
+    fn change_state(&mut self, new_state: State) {
+        let old_state = std::mem::replace(&mut self.state, new_state);
+
+        match old_state {
+            State::Idle => (),
+            _ => self.past_states.push(old_state)
+        }
+    }
+
+    fn tick_pattern(&mut self) {
+        if let State::Pattern { pattern } = &mut self.state {
+            pattern.start_tick(self.tick, &mut self.controller).unwrap();
+            self.tick += 1;
+            thread::sleep(Duration::from_millis(pattern.tick_rate()))
+        }
     }
 }

@@ -12,8 +12,10 @@ rs_ws281x = { version = "*", optional = true }
 enum_dispatch = "^0.3.7"
 rand = "0.8.4"
 
+serde = { version = "1.0", features = ["derive"], optional = true }
+
 [features]
-default = ["simulate"]
+default = ["simulate", "serde"]
 simulate = ["minifb"]
 hardware = ["rs_ws281x"]
 
