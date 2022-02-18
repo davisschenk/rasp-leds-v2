@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{controller::*, Pattern, RunnablePattern};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
@@ -10,8 +12,8 @@ type MessageReceiver = mpsc::Receiver<Command>;
 // type ResultSender = mpsc::Sender<LedResponse>;
 // type ResultReceiver = mpsc::Receiver<LedResponse>;
 
-#[derive(Debug)]
-enum State {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum State {
     Idle,
     Pattern { pattern: Pattern },
 }
@@ -30,6 +32,7 @@ pub trait Runner {
     fn on(&mut self);
     fn power(&mut self);
     fn start(&mut self);
+    fn get_history(&mut self) -> Vec<State>;
 }
 
 pub struct LedRunner {
@@ -45,6 +48,8 @@ impl Runner for LedRunner {
             if let Ok(mut inr) = inner.lock() {
                 inr.main_loop()
             }
+
+            thread::yield_now()
         });
     }
 
@@ -62,6 +67,14 @@ impl Runner for LedRunner {
 
     fn power(&mut self) {
         self.send_message(Command::Power)
+    }
+
+    fn get_history(&mut self) -> Vec<State> {
+        if let Ok(inr) = self.inner.lock() {
+            return inr.get_history();
+        }
+
+        vec![]
     }
 }
 
@@ -141,7 +154,11 @@ impl InnerRunner {
         self.recv_message(false);
 
         match &self.state {
-            State::Idle => self.recv_message(true),
+            State::Idle => {
+                std::hint::spin_loop();
+                self.recv_message(false);
+                thread::sleep(Duration::from_millis(10))
+            }
             State::Pattern { .. } => self.tick_pattern(),
         }
     }
@@ -164,12 +181,22 @@ impl InnerRunner {
     fn map_command_to_state(&mut self, command: Command) -> State {
         match command {
             Command::On => self.past_states.pop().unwrap_or(State::Idle),
-            Command::Off => State::Idle,
+            Command::Off => {
+                self.controller.clear(false).unwrap();
+                State::Idle
+            }
             Command::Power => match self.state {
                 State::Idle => self.past_states.pop().unwrap_or(State::Idle),
-                _ => State::Idle,
+                _ => {
+                    self.controller.clear(false).unwrap();
+                    State::Idle
+                }
             },
-            Command::Pattern { pattern } => State::Pattern { pattern },
+            Command::Pattern { mut pattern } => {
+                pattern.init(&mut self.controller).unwrap();
+                self.controller.clear(true).unwrap();
+                State::Pattern { pattern }
+            }
         }
     }
 
@@ -178,7 +205,7 @@ impl InnerRunner {
 
         match old_state {
             State::Idle => (),
-            _ => self.past_states.push(old_state)
+            _ => self.past_states.push(old_state),
         }
     }
 
@@ -188,5 +215,9 @@ impl InnerRunner {
             self.tick += 1;
             thread::sleep(Duration::from_millis(pattern.tick_rate()))
         }
+    }
+
+    fn get_history(&self) -> Vec<State> {
+        self.past_states.clone()
     }
 }

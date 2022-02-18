@@ -75,4 +75,20 @@ impl LedController for Controller {
 
         Ok(())
     }
+
+    fn clear(&mut self, state: bool) -> Result<()> {
+        let mut buffer = self.buffer.lock().unwrap();
+
+        for i in buffer.iter_mut() {
+            *i = 0
+        }
+
+        if state {
+            self.data.fill(Color::RGB(0,0,0))
+        }
+
+        self.update_channel.send(()).unwrap();
+
+        Ok(())
+    }
 }

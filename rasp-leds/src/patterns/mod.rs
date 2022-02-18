@@ -14,9 +14,10 @@ pub use rainbow::*;
 pub mod meteor;
 pub use meteor::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[enum_dispatch(RunnablePattern)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case", tag = "pattern"))]
 pub enum Pattern {
     MovingDot(MovingDot),
     RainbowCycle(RainbowCycle),

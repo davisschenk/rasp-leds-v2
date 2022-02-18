@@ -50,7 +50,180 @@ fn main() {
     println!("Second: {thing:?}");
 }
 #+end_src
+** Requests
+*** Patterns
+**** Meteor
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/pattern
+Content-Type: application/json
+
+{"pattern": "meteor", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]},"random_decay":true,"decay":32,"size":18}
+#+end_src
 
 #+RESULTS:
-: First: Value { num: 10 }
-: Second: Value { num: 11 }
+#+BEGIN_SRC text
+Changed Pattern
+POST http://0.0.0.0:8080/api/pattern
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+permissions-policy: interest-cohort=()
+content-length: 15
+date: Fri, 18 Feb 2022 05:40:54 GMT
+Request duration: 0.002132s
+#+END_SRC
+
+**** Moving Dot
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/pattern
+Content-Type: application/json
+
+{"pattern": "moving_dot", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]}}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC text
+Changed Pattern
+POST http://0.0.0.0:8080/api/pattern
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+permissions-policy: interest-cohort=()
+content-length: 15
+date: Fri, 18 Feb 2022 05:41:07 GMT
+Request duration: 0.002049s
+#+END_SRC
+**** Rainbow
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/pattern
+Content-Type: application/json
+
+{"pattern": "rainbow_cycle", "tick_rate":100}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC text
+Changed Pattern
+POST http://0.0.0.0:8080/api/pattern
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+x-frame-options: SAMEORIGIN
+x-content-type-options: nosniff
+permissions-policy: interest-cohort=()
+content-length: 15
+date: Fri, 18 Feb 2022 05:43:03 GMT
+Request duration: 0.001878s
+#+END_SRC
+
+*** On
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/on
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC text
+Turned on
+POST http://0.0.0.0:8080/api/on
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+permissions-policy: interest-cohort=()
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+content-length: 9
+date: Fri, 18 Feb 2022 05:36:02 GMT
+Request duration: 0.007047s
+#+END_SRC
+
+*** Off
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/off
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC text
+Turned off
+POST http://0.0.0.0:8080/api/off
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+permissions-policy: interest-cohort=()
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+content-length: 10
+date: Fri, 18 Feb 2022 05:13:18 GMT
+Request duration: 0.006537s
+#+END_SRC
+
+*** Power
+#+begin_src restclient
+POST http://0.0.0.0:8080/api/power
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC text
+Toggled
+POST http://0.0.0.0:8080/api/power
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+server: Rocket
+permissions-policy: interest-cohort=()
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+content-length: 7
+date: Fri, 18 Feb 2022 05:16:38 GMT
+Request duration: 0.006534s
+#+END_SRC
+
+*** History
+#+begin_src restclient
+GET http://0.0.0.0:8080/api/history
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+[
+  {
+    "Pattern": {
+      "pattern": {
+        "pattern": "meteor",
+        "tick_rate": 100,
+        "tick_cycle": 300,
+        "color": {
+          "RGB": [
+            255,
+            0,
+            255
+          ]
+        },
+        "random_decay": true,
+        "decay": 32,
+        "size": 18
+      }
+    }
+  },
+  {
+    "Pattern": {
+      "pattern": {
+        "pattern": "rainbow_cycle",
+        "tick_rate": 100
+      }
+    }
+  }
+]
+// GET http://0.0.0.0:8080/api/history
+// HTTP/1.1 200 OK
+// content-type: application/json
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 216
+// date: Fri, 18 Feb 2022 05:41:15 GMT
+// Request duration: 0.036626s
+#+END_SRC

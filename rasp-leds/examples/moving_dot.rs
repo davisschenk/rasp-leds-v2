@@ -1,4 +1,4 @@
-use rasp_leds_v2::*;
+use rasp_leds_hal::*;
 
 use std::{thread::sleep, time::Duration};
 

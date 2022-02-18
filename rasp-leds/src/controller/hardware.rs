@@ -55,4 +55,17 @@ impl LedController for Controller {
     fn get_count(&self) -> usize {
         self.count
     }
+
+    fn clear(&self, state: bool) -> anyhow::Result<()> {
+        for led in self.controller.leds_mut(0).iter_mut() {
+            *led = &[0,0,0,0]
+        }
+
+        if state {
+            self.data.fill(Color::RGB(0,0,0))
+        }
+
+        self.controller.render().unwrap();
+        Ok(())
+    }
 }

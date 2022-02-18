@@ -1,6 +1,6 @@
 use std::{thread, time::Duration};
-
-use rasp_leds_v2::*;
+use serde_json::json;
+use rasp_leds_hal::*;
 
 #[test]
 fn test_runner() {
@@ -21,7 +21,10 @@ fn test_runner() {
         size: 18,
     };
 
-    runner.run_pattern(Pattern::Meteor(pattern));
+    let p = Pattern::Meteor(pattern);
+    println!("{:?}", serde_json::to_string(&p).unwrap());
+
+    runner.run_pattern(p);
     thread::sleep(Duration::from_secs(10));
 
     runner.off();

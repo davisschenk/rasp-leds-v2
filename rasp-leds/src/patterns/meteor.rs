@@ -5,9 +5,9 @@ use anyhow::Result;
 use rand::Rng;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Meteor {
     pub tick_rate: u64,
@@ -20,7 +20,7 @@ pub struct Meteor {
 
 impl RunnablePattern for Meteor {
     fn init(&mut self, controller: &mut Controller) -> Result<()> {
-        self.tick_cycle = controller.get_count() as u64 + self.size as u64;
+        self.tick_cycle = controller.get_count() as u64 * 2;
         Ok(())
     }
 
@@ -43,18 +43,11 @@ impl RunnablePattern for Meteor {
             }
         }
 
-        for i in tick..tick + self.size as u64 {
-            if i < count as u64 {
-                data[i as usize] = self.color;
+        for j in 0..self.size {
+            if (((tick as isize) - (j as isize) < count as isize) && (tick as isize - j as isize >= 0)) {
+                data[tick as usize - j as usize] = self.color;
             }
         }
-
-        // for j in 0..self.size {
-        //     if count as u64 > tick - j as u64 {
-        //         data[(tick - j as u64) as usize] = self.color;
-        //     }
-        // }
-
         controller.update()
     }
 }

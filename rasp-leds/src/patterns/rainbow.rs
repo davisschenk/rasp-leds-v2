@@ -5,7 +5,7 @@ use anyhow::Result;
 #[cfg(feature = "serde")]
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct RainbowCycle {
     pub tick_rate: u64,

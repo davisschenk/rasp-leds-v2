@@ -1,4 +1,4 @@
-use rasp_leds_v2::{Controller, RainbowCycle, RunnablePattern};
+use rasp_leds_hal::{Controller, RainbowCycle, RunnablePattern};
 use std::{thread::sleep, time::Duration};
 
 fn main() {

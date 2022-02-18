@@ -11,4 +11,7 @@ pub trait LedController {
 
     /// Display data on the device
     fn update(&mut self) -> Result<()>;
+
+    /// Clear all leds without changing internal state
+    fn clear(&mut self, state: bool) -> Result<()>;
 }

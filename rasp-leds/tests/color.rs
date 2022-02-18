@@ -1,4 +1,4 @@
-use rasp_leds_v2::Color;
+use rasp_leds_hal::Color;
 
 #[test]
 fn test_rgb_to_u32() {
