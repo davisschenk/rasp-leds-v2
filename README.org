@@ -51,10 +51,14 @@ fn main() {
 }
 #+end_src
 ** Requests
+#+NAME: ip
+#+begin_src text
+0.0.0.0:8080
+#+end_src
 *** Patterns
 **** Meteor
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/pattern
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
 {"pattern": "meteor", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]},"random_decay":true,"decay":32,"size":18}
@@ -76,8 +80,8 @@ Request duration: 0.002132s
 #+END_SRC
 
 **** Moving Dot
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/pattern
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
 {"pattern": "moving_dot", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]}}
@@ -98,31 +102,20 @@ date: Fri, 18 Feb 2022 05:41:07 GMT
 Request duration: 0.002049s
 #+END_SRC
 **** Rainbow
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/pattern
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
 {"pattern": "rainbow_cycle", "tick_rate":100}
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Changed Pattern
-POST http://0.0.0.0:8080/api/pattern
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-x-frame-options: SAMEORIGIN
-x-content-type-options: nosniff
-permissions-policy: interest-cohort=()
-content-length: 15
-date: Fri, 18 Feb 2022 05:43:03 GMT
-Request duration: 0.001878s
-#+END_SRC
+#+begin_example
+#+end_example
 
 *** On
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/on
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/on
 #+end_src
 
 #+RESULTS:
@@ -141,8 +134,8 @@ Request duration: 0.007047s
 #+END_SRC
 
 *** Off
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/off
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/off
 #+end_src
 
 #+RESULTS:
@@ -161,8 +154,8 @@ Request duration: 0.006537s
 #+END_SRC
 
 *** Power
-#+begin_src restclient
-POST http://0.0.0.0:8080/api/power
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/power
 #+end_src
 
 #+RESULTS:
@@ -181,8 +174,8 @@ Request duration: 0.006534s
 #+END_SRC
 
 *** History
-#+begin_src restclient
-GET http://0.0.0.0:8080/api/history
+#+begin_src restclient :noweb yes
+GET http://<<ip>>/api/history
 #+end_src
 
 #+RESULTS:

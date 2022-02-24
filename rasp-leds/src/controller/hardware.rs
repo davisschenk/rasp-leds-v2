@@ -56,9 +56,9 @@ impl LedController for Controller {
         self.count
     }
 
-    fn clear(&self, state: bool) -> anyhow::Result<()> {
+    fn clear(&mut self, state: bool) -> anyhow::Result<()> {
         for led in self.controller.leds_mut(0).iter_mut() {
-            *led = &[0,0,0,0]
+            *led = [0,0,0,0]
         }
 
         if state {

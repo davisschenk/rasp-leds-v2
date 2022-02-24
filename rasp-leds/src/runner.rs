@@ -36,21 +36,50 @@ pub trait Runner {
 }
 
 pub struct LedRunner {
-    inner: Arc<Mutex<InnerRunner>>,
-    sender: MessageSender,
+    sender: Option<MessageSender>,
+
+    #[cfg(feature = "hardware")]
+    count: usize,
+    #[cfg(feature = "hardware")]
+    pin: i32,
+    #[cfg(feature = "hardware")]
+    brightness: u8,
+
+    #[cfg(feature = "simulate")]
+    count: usize,
+    #[cfg(feature = "simulate")]
+    cell_size: usize
 }
 
 impl Runner for LedRunner {
     fn start(&mut self) {
-        let inner = self.inner.clone();
+        let (sender, reciever) = mpsc::channel();
+        self.sender = Some( sender );
 
-        thread::spawn(move || loop {
-            if let Ok(mut inr) = inner.lock() {
-                inr.main_loop()
-            }
+        #[cfg(feature = "hardware")]
+        let count = self.count;
+        #[cfg(feature = "hardware")]
+        let pin = self.pin;
+        #[cfg(feature = "hardware")]
+        let brightness = self.brightness;
 
-            thread::yield_now()
-        });
+        #[cfg(feature = "simulate")]
+        let count = self.count;
+        #[cfg(feature = "simulate")]
+        let cell_size = self.cell_size;
+
+        thread::spawn(move || {
+
+            #[cfg(feature = "simulate")]
+            let mut inner = InnerRunner::new(reciever, count, cell_size);
+
+            #[cfg(feature = "hardware")]
+            let mut inner = InnerRunner::new(reciever, count, pin, brightness);
+
+            loop {
+                inner.main_loop();
+                thread::yield_now()
+            }});
     }
 
     fn run_pattern(&mut self, pattern: Pattern) {
@@ -70,11 +99,7 @@ impl Runner for LedRunner {
     }
 
     fn get_history(&mut self) -> Vec<State> {
-        if let Ok(inr) = self.inner.lock() {
-            return inr.get_history();
-        }
-
-        vec![]
+        unimplemented!()
     }
 }
 
@@ -87,11 +112,10 @@ impl LedRunner {
     /// * `cell_size` - The size in pixels for each virtual led
     #[cfg(feature = "simulate")]
     pub fn new(count: usize, cell_size: usize) -> Self {
-        let (sender, reciever) = mpsc::channel();
-
         Self {
-            inner: Arc::new(Mutex::new(InnerRunner::new(reciever, count, cell_size))),
-            sender,
+            sender: None,
+            count,
+            cell_size
         }
     }
 
@@ -104,18 +128,18 @@ impl LedRunner {
     /// * `brightness` - The base brightness to run the lights at
     #[cfg(feature = "hardware")]
     pub fn new(count: usize, pin: i32, brightness: u8) -> Self {
-        let (sender, reciever) = mpsc::channel();
-
         Self {
-            inner: Arc::new(Mutex::new(InnerRunner::new(
-                reciever, count, pin, brightness,
-            ))),
-            sender,
+            sender: None,
+            count,
+            pin,
+            brightness
         }
     }
 
     fn send_message(&self, command: Command) {
-        self.sender.send(command).unwrap();
+        if let Some(sender) = &self.sender {
+            sender.send(command).unwrap();
+        }
     }
 }
 
