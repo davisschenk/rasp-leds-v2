@@ -1,7 +1,7 @@
 use crate::color::Color;
 use crate::controller::{Controller, LedController};
+use crate::error::{LedError, Result};
 use crate::patterns::RunnablePattern;
-use anyhow::Result;
 use rand::Rng;
 
 #[cfg(feature = "serde")]
@@ -44,7 +44,9 @@ impl RunnablePattern for Meteor {
         }
 
         for j in 0..self.size {
-            if (((tick as isize) - (j as isize) < count as isize) && (tick as isize - j as isize >= 0)) {
+            if ((tick as isize) - (j as isize) < count as isize)
+                && (tick as isize - j as isize >= 0)
+            {
                 data[tick as usize - j as usize] = self.color;
             }
         }

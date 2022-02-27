@@ -1,5 +1,5 @@
 use crate::color::Color;
-use anyhow::Result;
+use crate::error::Result;
 
 /// A struct which is capable of being treated as an LED strip
 pub trait LedController {

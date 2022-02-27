@@ -1,9 +1,9 @@
 use crate::controller::Controller;
-use anyhow::Result;
+use crate::error::Result;
 use enum_dispatch::enum_dispatch;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 pub mod moving_dot;
 pub use moving_dot::*;

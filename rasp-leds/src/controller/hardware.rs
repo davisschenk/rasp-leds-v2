@@ -1,5 +1,6 @@
 use super::LedController;
 use crate::color::*;
+use crate::error::Result;
 use rs_ws281x::{ChannelBuilder, Controller as RaspController, ControllerBuilder, StripType};
 
 pub struct Controller {
@@ -43,7 +44,7 @@ impl LedController for Controller {
         &mut self.data
     }
 
-    fn update(&mut self) -> anyhow::Result<()> {
+    fn update(&mut self) -> Result<()> {
         for (led, color) in self.controller.leds_mut(0).iter_mut().zip(self.data.iter()) {
             *led = color.to_arr();
         }
@@ -56,13 +57,13 @@ impl LedController for Controller {
         self.count
     }
 
-    fn clear(&mut self, state: bool) -> anyhow::Result<()> {
+    fn clear(&mut self, state: bool) -> Result<()> {
         for led in self.controller.leds_mut(0).iter_mut() {
-            *led = [0,0,0,0]
+            *led = [0, 0, 0, 0]
         }
 
         if state {
-            self.data.fill(Color::RGB(0,0,0))
+            self.data.fill(Color::RGB(0, 0, 0))
         }
 
         self.controller.render().unwrap();

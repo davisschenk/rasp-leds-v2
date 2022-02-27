@@ -1,247 +1,251 @@
-use serde::{Deserialize, Serialize};
+use crate::{error::Result, Controller, LedController, LedError, Pattern, RunnablePattern};
+use async_trait::async_trait;
+use serde::Serialize;
+use std::{collections::VecDeque, thread, time::Duration};
+use tokio::runtime::{Builder, Runtime};
+use tokio::sync::{mpsc, oneshot};
 
-use crate::{controller::*, Pattern, RunnablePattern};
-use std::sync::mpsc;
-use std::sync::{Arc, Mutex};
-use std::thread;
-use std::time::Duration;
+type Sender = mpsc::Sender<Command>;
+type Receiver = mpsc::Receiver<Command>;
+type Responder<T> = oneshot::Sender<Result<T>>;
 
-type MessageSender = mpsc::Sender<Command>;
-type MessageReceiver = mpsc::Receiver<Command>;
+pub type HistoryList = VecDeque<History>;
 
-// type ResultSender = mpsc::Sender<LedResponse>;
-// type ResultReceiver = mpsc::Receiver<LedResponse>;
+/// An input to the internal state machine
+#[derive(Debug)]
+enum Command {
+    On(Responder<()>),
+    Off(Responder<()>),
+    Power(Responder<()>),
+    History(Responder<HistoryList>),
+    Pattern(Responder<()>, Pattern),
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum State {
+impl Command {
+    fn into_history(&self) -> History {
+        match self {
+            Command::On { .. } => History::On,
+            Command::Off { .. } => History::Off,
+            Command::Power { .. } => History::Power,
+            Command::History { .. } => History::History,
+            Command::Pattern(_, pattern) => History::Pattern(pattern.clone()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum History {
+    On,
+    Off,
+    Power,
+    History,
+    Pattern(Pattern),
+}
+
+pub struct LedRunner {
+    sender: Sender,
+}
+
+impl LedRunner {
+    #[cfg(feature = "simulate")]
+    pub fn new(count: usize, cell_size: usize) -> Self {
+        let (sender, receiver) = mpsc::channel(100);
+
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+
+        thread::spawn(move || {
+            let controller = Controller::new(count, cell_size);
+            let mut inner = InnerRunner::new(runtime, receiver, controller);
+
+            loop {
+                inner.main_loop().unwrap();
+            }
+        });
+
+        Self { sender }
+    }
+
+    #[cfg(feature = "hardware")]
+    pub fn new(count: usize, pin: i32, brightness: u8) -> Self {
+        let (sender, receiver) = mpsc::channel(100);
+
+        let runtime = Builder::new_current_thread().enable_all().build().unwrap();
+
+        thread::spawn(move || {
+            let controller = Controller::new(count, pin, brightness);
+            let mut inner = InnerRunner::new(runtime, receiver, controller);
+
+            loop {
+                inner.main_loop().unwrap();
+            }
+        });
+
+        Self { sender }
+    }
+}
+
+#[async_trait]
+pub trait Runner {
+    async fn on(&self) -> Result<()>;
+    async fn off(&self) -> Result<()>;
+    async fn power(&self) -> Result<()>;
+    async fn history(&self) -> Result<HistoryList>;
+    async fn pattern(&self, pattern: Pattern) -> Result<()>;
+}
+
+macro_rules! send_message {
+    {
+        $(
+            async fn $name:ident(&self $(,)? $($param:ident : $typ:ty),* $(,)?)
+            $( -> $ret:ty )? | $en:expr
+        )*
+    } => {
+        #[async_trait]
+        impl Runner for LedRunner {
+            $(
+
+                async fn $name(&self, $($param: $typ),*) $( -> $ret)? {
+                    let (resp, recv) = oneshot::channel();
+
+                    let command = $en(resp, $($param),*);
+
+                    self.sender.send(command).await.map_err(|_| LedError::SendError)?;
+
+                    recv.await.unwrap()
+                }
+            )*
+        }
+    }
+}
+send_message! {
+    async fn on(&self) -> Result<()> | Command::On
+    async fn off(&self) -> Result<()> | Command::Off
+    async fn power(&self) -> Result<()> | Command::Power
+    async fn history(&self) -> Result<HistoryList> | Command::History
+    async fn pattern(&self, pattern: Pattern) -> Result<()> | Command::Pattern
+}
+
+enum State {
     Idle,
     Pattern { pattern: Pattern },
 }
 
-#[derive(Debug)]
-enum Command {
-    On,
-    Off,
-    Power,
-    Pattern { pattern: Pattern },
-}
-
-pub trait Runner {
-    fn run_pattern(&mut self, pattern: Pattern);
-    fn off(&mut self);
-    fn on(&mut self);
-    fn power(&mut self);
-    fn start(&mut self);
-    fn get_history(&mut self) -> Vec<State>;
-}
-
-pub struct LedRunner {
-    sender: Option<MessageSender>,
-
-    #[cfg(feature = "hardware")]
-    count: usize,
-    #[cfg(feature = "hardware")]
-    pin: i32,
-    #[cfg(feature = "hardware")]
-    brightness: u8,
-
-    #[cfg(feature = "simulate")]
-    count: usize,
-    #[cfg(feature = "simulate")]
-    cell_size: usize
-}
-
-impl Runner for LedRunner {
-    fn start(&mut self) {
-        let (sender, reciever) = mpsc::channel();
-        self.sender = Some( sender );
-
-        #[cfg(feature = "hardware")]
-        let count = self.count;
-        #[cfg(feature = "hardware")]
-        let pin = self.pin;
-        #[cfg(feature = "hardware")]
-        let brightness = self.brightness;
-
-        #[cfg(feature = "simulate")]
-        let count = self.count;
-        #[cfg(feature = "simulate")]
-        let cell_size = self.cell_size;
-
-        thread::spawn(move || {
-
-            #[cfg(feature = "simulate")]
-            let mut inner = InnerRunner::new(reciever, count, cell_size);
-
-            #[cfg(feature = "hardware")]
-            let mut inner = InnerRunner::new(reciever, count, pin, brightness);
-
-            loop {
-                inner.main_loop();
-                thread::yield_now()
-            }});
-    }
-
-    fn run_pattern(&mut self, pattern: Pattern) {
-        self.send_message(Command::Pattern { pattern });
-    }
-
-    fn off(&mut self) {
-        self.send_message(Command::Off);
-    }
-
-    fn on(&mut self) {
-        self.send_message(Command::On)
-    }
-
-    fn power(&mut self) {
-        self.send_message(Command::Power)
-    }
-
-    fn get_history(&mut self) -> Vec<State> {
-        unimplemented!()
-    }
-}
-
-impl LedRunner {
-    /// Create a new Virtual `LedRunner`
-    ///
-    /// # Arguments
-    ///
-    /// * `count` - The number of virtual leds
-    /// * `cell_size` - The size in pixels for each virtual led
-    #[cfg(feature = "simulate")]
-    pub fn new(count: usize, cell_size: usize) -> Self {
-        Self {
-            sender: None,
-            count,
-            cell_size
-        }
-    }
-
-    /// Create a new Hardware `LedRunner`
-    ///
-    /// # Arguments
-    ///
-    /// * `count` - The number of leds on the strip
-    /// * `pin` - The raspberry pin the leds are connected too
-    /// * `brightness` - The base brightness to run the lights at
-    #[cfg(feature = "hardware")]
-    pub fn new(count: usize, pin: i32, brightness: u8) -> Self {
-        Self {
-            sender: None,
-            count,
-            pin,
-            brightness
-        }
-    }
-
-    fn send_message(&self, command: Command) {
-        if let Some(sender) = &self.sender {
-            sender.send(command).unwrap();
-        }
-    }
-}
-
 struct InnerRunner {
+    runtime: Runtime,
+    receiver: Receiver,
     controller: Controller,
     state: State,
-    receiver: MessageReceiver,
     tick: u64,
-    past_states: Vec<State>,
+    history: HistoryList,
 }
 
 impl InnerRunner {
-    #[cfg(feature = "simulate")]
-    fn new(recv: MessageReceiver, count: usize, cell_size: usize) -> Self {
-        let controller = Controller::new(count, cell_size);
-        Self::from_controller(controller, recv)
-    }
-
-    #[cfg(feature = "hardware")]
-    fn new(recv: MessageReceiver, count: usize, pin: i32, brightness: u8) -> Self {
-        let controller = Controller::new(count, pin, brightness);
-        Self::from_controller(controller, recv)
-    }
-
-    fn from_controller(controller: Controller, receiver: MessageReceiver) -> Self {
+    pub fn new(runtime: Runtime, receiver: Receiver, controller: Controller) -> Self {
         Self {
-            controller: controller,
-            state: State::Idle,
+            runtime,
             receiver,
-            tick: 0u64,
-            past_states: vec![],
+            controller,
+            state: State::Idle,
+            tick: 0,
+            history: HistoryList::default(),
         }
     }
-
-    pub fn main_loop(&mut self) {
-        self.recv_message(false);
+    pub fn main_loop(&mut self) -> Result<()> {
+        self.receive_message(false)?;
 
         match &self.state {
-            State::Idle => {
-                std::hint::spin_loop();
-                self.recv_message(false);
-                thread::sleep(Duration::from_millis(10))
-            }
-            State::Pattern { .. } => self.tick_pattern(),
+            State::Idle => self.receive_message(true)?,
+            State::Pattern { .. } => self.tick_pattern()?,
         }
+
+        Ok(())
     }
 
-    /// Recieve a message from the reciever and change internal state
-    ///
-    /// # Arguments
-    /// * `blocking` - Whether or not to wait for a message to set the state
-    fn recv_message(&mut self, blocking: bool) {
-        if blocking {
-            let command = self.receiver.recv().unwrap();
-            let new_state = self.map_command_to_state(command);
-            self.change_state(new_state)
-        } else if let Ok(command) = self.receiver.try_recv() {
-            let new_state = self.map_command_to_state(command);
-            self.change_state(new_state);
-        }
-    }
-
-    fn map_command_to_state(&mut self, command: Command) -> State {
-        match command {
-            Command::On => self.past_states.pop().unwrap_or(State::Idle),
-            Command::Off => {
-                self.controller.clear(false).unwrap();
-                State::Idle
-            }
-            Command::Power => match self.state {
-                State::Idle => self.past_states.pop().unwrap_or(State::Idle),
-                _ => {
-                    self.controller.clear(false).unwrap();
-                    State::Idle
-                }
-            },
-            Command::Pattern { mut pattern } => {
-                pattern.init(&mut self.controller).unwrap();
-                self.controller.clear(true).unwrap();
-                State::Pattern { pattern }
-            }
-        }
-    }
-
-    fn change_state(&mut self, new_state: State) {
-        let old_state = std::mem::replace(&mut self.state, new_state);
-
-        match old_state {
-            State::Idle => (),
-            _ => self.past_states.push(old_state),
-        }
-    }
-
-    fn tick_pattern(&mut self) {
+    fn tick_pattern(&mut self) -> Result<()> {
         if let State::Pattern { pattern } = &mut self.state {
             pattern.start_tick(self.tick, &mut self.controller).unwrap();
             self.tick += 1;
             thread::sleep(Duration::from_millis(pattern.tick_rate()))
         }
+
+        Ok(())
     }
 
-    fn get_history(&self) -> Vec<State> {
-        self.past_states.clone()
+    fn receive_message(&mut self, blocking: bool) -> Result<()> {
+        if blocking {
+            let command = self.runtime.block_on(self.receiver.recv()).unwrap();
+            self.command_to_state(command)?;
+        } else if let Ok(command) = self.receiver.try_recv() {
+            self.command_to_state(command)?;
+        }
+
+        Ok(())
+    }
+
+    fn command_to_state(&mut self, command: Command) -> Result<()> {
+        if let Command::Pattern(..) = command {
+            self.history.push_front(command.into_history());
+        }
+
+        match command {
+            Command::On(resp) => {
+                let result: Result<()> = if let Some(pattern) = self.last_pattern() {
+                    self.state = State::Pattern { pattern };
+                    Ok(())
+                } else {
+                    Err(LedError::NoHistory)
+                };
+
+                let _ = resp.send(result);
+            }
+            Command::Off(resp) => {
+                self.state = State::Idle;
+                self.controller.clear(false)?;
+
+                let _ = resp.send(Ok(()));
+            }
+            Command::Power(resp) => {
+                let result = if let State::Idle = self.state {
+                    if let Some(pattern) = self.last_pattern() {
+                        self.state = State::Pattern { pattern };
+                        Ok(())
+                    } else {
+                        Err(LedError::NoHistory)
+                    }
+                } else {
+                    self.state = State::Idle;
+                    self.controller.clear(false)?;
+                    Ok(())
+                };
+
+                let _ = resp.send(result);
+            }
+            Command::History(resp) => {
+                let _ = resp.send(Ok(self.history.clone()));
+            }
+            Command::Pattern(resp, mut pattern) => {
+                let result = pattern.init(&mut self.controller);
+
+                if result.is_ok() {
+                    self.controller.clear(true)?;
+                    self.state = State::Pattern { pattern }
+                }
+
+                let _ = resp.send(result);
+            }
+        }
+
+        Ok(())
+    }
+
+    fn last_pattern(&self) -> Option<Pattern> {
+        for history in &self.history {
+            if let History::Pattern(pattern) = history {
+                return Some(pattern.clone());
+            }
+        }
+
+        None
     }
 }

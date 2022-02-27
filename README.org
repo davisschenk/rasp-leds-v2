@@ -10,8 +10,7 @@
 - Custom Pattern
   Be able to set individual LEDs then add movements
 
-** TODO Hardware or Simulation based on feature
-** TODO Fairly Efficient
+** DONE Hardware or Simulation based on feature
 ** TODO Pattern [3/7]
 *** DONE Meteor
 *** DONE Moving Dot
@@ -21,6 +20,10 @@ Connecting to watch using ANT+
 *** TODO Timer
 *** TODO Alarm
 *** TODO Custom
+** TODO ENV File for settings
+** TODO Logging
+** DONE Error Handling
+*** TODO Fix json
 
 * Design
 ** Parts
@@ -28,6 +31,31 @@ Connecting to watch using ANT+
 A higher level abstraction for controlling an LED Strip, whether on hardware or virtual
 *** Runner
 An abstraction that provides a way to control the led strip using
+*** Diagram
+#+begin_src dot :file temp.png
+digraph {
+    subgraph cluster_thread_one {
+        label="Webserver Thread";
+        req[label="Request"];
+        webserver[label="Server"];
+        webserver -> req;
+    }
+
+    subgraph cluster_thread_two {
+        label="Led Manager Thread";
+        resp[label="Response"];
+        main_loop[label="Main Loop"];
+        resp -> webserver;
+        main_loop -> main_loop;
+        main_loop -> resp;
+        req -> main_loop;
+    }
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:temp.png]]
 
 * Scratch
 ** Changing value in enum
@@ -55,6 +83,11 @@ fn main() {
 #+begin_src text
 0.0.0.0:8080
 #+end_src
+
++NAME: ip
+#+begin_src text
+192.168.8.176:8080
+#+end_src
 *** Patterns
 **** Meteor
 #+begin_src restclient :noweb yes
@@ -65,18 +98,16 @@ Content-Type: application/json
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Changed Pattern
-POST http://0.0.0.0:8080/api/pattern
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-x-frame-options: SAMEORIGIN
-x-content-type-options: nosniff
-permissions-policy: interest-cohort=()
-content-length: 15
-date: Fri, 18 Feb 2022 05:40:54 GMT
-Request duration: 0.002132s
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:35:19 GMT
+// Request duration: 0.065343s
 #+END_SRC
 
 **** Moving Dot
@@ -88,30 +119,37 @@ Content-Type: application/json
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Changed Pattern
-POST http://0.0.0.0:8080/api/pattern
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-x-frame-options: SAMEORIGIN
-x-content-type-options: nosniff
-permissions-policy: interest-cohort=()
-content-length: 15
-date: Fri, 18 Feb 2022 05:41:07 GMT
-Request duration: 0.002049s
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// x-content-type-options: nosniff
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:41:53 GMT
+// Request duration: 0.015608s
 #+END_SRC
 **** Rainbow
 #+begin_src restclient :noweb yes
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "rainbow_cycle", "tick_rate":100}
+{"pattern": "rainbow_cycle", "tick_rate":50}
 #+end_src
 
 #+RESULTS:
-#+begin_example
-#+end_example
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// x-content-type-options: nosniff
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:41:56 GMT
+// Request duration: 0.018713s
+#+END_SRC
 
 *** On
 #+begin_src restclient :noweb yes
@@ -119,18 +157,16 @@ POST http://<<ip>>/api/on
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Turned on
-POST http://0.0.0.0:8080/api/on
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-permissions-policy: interest-cohort=()
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-content-length: 9
-date: Fri, 18 Feb 2022 05:36:02 GMT
-Request duration: 0.007047s
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/on
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:37:57 GMT
+// Request duration: 0.006783s
 #+END_SRC
 
 *** Off
@@ -139,18 +175,16 @@ POST http://<<ip>>/api/off
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Turned off
-POST http://0.0.0.0:8080/api/off
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-permissions-policy: interest-cohort=()
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-content-length: 10
-date: Fri, 18 Feb 2022 05:13:18 GMT
-Request duration: 0.006537s
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/off
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:37:54 GMT
+// Request duration: 0.056823s
 #+END_SRC
 
 *** Power
@@ -159,19 +193,23 @@ POST http://<<ip>>/api/power
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC text
-Toggled
-POST http://0.0.0.0:8080/api/power
-HTTP/1.1 200 OK
-content-type: text/plain; charset=utf-8
-server: Rocket
-permissions-policy: interest-cohort=()
-x-content-type-options: nosniff
-x-frame-options: SAMEORIGIN
-content-length: 7
-date: Fri, 18 Feb 2022 05:16:38 GMT
-Request duration: 0.006534s
+#+BEGIN_SRC js
+{
+  "error": "NoHistory"
+}
+// POST http://0.0.0.0:8080/api/power
+// HTTP/1.1 200 OK
+// content-type: application/json
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 21
+// date: Sun, 27 Feb 2022 05:39:27 GMT
+// Request duration: 0.007133s
 #+END_SRC
+
+#+RESULTS:
 
 *** History
 #+begin_src restclient :noweb yes
@@ -182,30 +220,21 @@ GET http://<<ip>>/api/history
 #+BEGIN_SRC js
 [
   {
-    "Pattern": {
-      "pattern": {
-        "pattern": "meteor",
-        "tick_rate": 100,
-        "tick_cycle": 300,
-        "color": {
-          "RGB": [
-            255,
-            0,
-            255
-          ]
-        },
-        "random_decay": true,
-        "decay": 32,
-        "size": 18
-      }
-    }
+    "type": "Pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 50
   },
   {
-    "Pattern": {
-      "pattern": {
-        "pattern": "rainbow_cycle",
-        "tick_rate": 100
-      }
+    "type": "Pattern",
+    "pattern": "moving_dot",
+    "tick_rate": 100,
+    "tick_cycle": 150,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
     }
   }
 ]
@@ -214,9 +243,9 @@ GET http://<<ip>>/api/history
 // content-type: application/json
 // server: Rocket
 // x-frame-options: SAMEORIGIN
-// x-content-type-options: nosniff
 // permissions-policy: interest-cohort=()
-// content-length: 216
-// date: Fri, 18 Feb 2022 05:41:15 GMT
-// Request duration: 0.036626s
+// x-content-type-options: nosniff
+// content-length: 164
+// date: Sun, 27 Feb 2022 05:42:03 GMT
+// Request duration: 0.066465s
 #+END_SRC

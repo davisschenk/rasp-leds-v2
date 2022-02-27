@@ -5,7 +5,7 @@ use minifb::{Key, Window, WindowOptions};
 
 use super::LedController;
 use crate::color::Color;
-use anyhow::Result;
+use crate::error::Result;
 use std::sync::{mpsc, Arc, Mutex};
 
 // const CELL_SIZE: usize = 25;
@@ -84,7 +84,7 @@ impl LedController for Controller {
         }
 
         if state {
-            self.data.fill(Color::RGB(0,0,0))
+            self.data.fill(Color::RGB(0, 0, 0))
         }
 
         self.update_channel.send(()).unwrap();

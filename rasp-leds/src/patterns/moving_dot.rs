@@ -1,10 +1,10 @@
 use crate::color::Color;
 use crate::controller::{Controller, LedController};
+use crate::error::Result;
 use crate::patterns::RunnablePattern;
-use anyhow::Result;
 
 #[cfg(feature = "serde")]
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
