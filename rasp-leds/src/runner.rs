@@ -1,6 +1,6 @@
 use crate::{error::Result, Controller, LedController, LedError, Pattern, RunnablePattern};
 use async_trait::async_trait;
-use log::info;
+use log::{error, info};
 use serde::Serialize;
 use std::{collections::VecDeque, thread, time::Duration};
 use tokio::runtime::{Builder, Runtime};
@@ -60,7 +60,7 @@ impl LedRunner {
             let mut inner = InnerRunner::new(runtime, receiver, controller);
 
             loop {
-                inner.main_loop().unwrap();
+                inner.main_loop().map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
             }
         });
 
