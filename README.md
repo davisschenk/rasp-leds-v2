@@ -13,6 +13,8 @@ Toggles between on and off
 Runs one of the patterns
 - GET /history
 Returns a JSON list of the previous patterns
+- GET /info
+Return an object with the led count, state and current leds
 
 ## Hardware
 - Raspberry Pi 3b+

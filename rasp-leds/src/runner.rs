@@ -1,3 +1,4 @@
+use crate::Color;
 use crate::{error::Result, Controller, LedController, LedError, Pattern, RunnablePattern};
 use async_trait::async_trait;
 use log::{error, info};
@@ -20,6 +21,7 @@ enum Command {
     Power(Responder<()>),
     History(Responder<HistoryList>),
     Pattern(Responder<()>, Pattern),
+    Info(Responder<Info>)
 }
 
 impl Command {
@@ -30,6 +32,7 @@ impl Command {
             Command::Power(_) => History::Power,
             Command::History(_) => History::History,
             Command::Pattern(_, pattern) => History::Pattern(pattern.clone()),
+            Command::Info(_) => History::Info,
         }
     }
 }
@@ -41,8 +44,28 @@ pub enum History {
     Off,
     Power,
     History,
+    Info,
     Pattern(Pattern),
 }
+
+#[derive(Debug, Clone, Serialize)]
+pub struct Info {
+    led_count: usize,
+    current_state: State,
+    state: Vec<Color>
+}
+
+impl Info {
+    fn new(runner: &mut InnerRunner) -> Self {
+       Self {
+           led_count: runner.controller.get_count(),
+           current_state: runner.state.clone(),
+           state: runner.controller.get_data().clone()
+       }
+    }
+}
+
+
 
 pub struct LedRunner {
     sender: Sender,
@@ -80,7 +103,7 @@ impl LedRunner {
             let mut inner = InnerRunner::new(runtime, receiver, controller);
 
             loop {
-                inner.main_loop().map_err(|e| warn!("Main loop returned an error: {:?}", e))
+                inner.main_loop().map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
             }
         });
 
@@ -95,6 +118,7 @@ pub trait Runner {
     async fn power(&self) -> Result<()>;
     async fn history(&self) -> Result<HistoryList>;
     async fn pattern(&self, pattern: Pattern) -> Result<()>;
+    async fn info(&self) -> Result<Info>;
 }
 
 macro_rules! send_message {
@@ -127,8 +151,10 @@ send_message! {
     async fn power(&self) -> Result<()>                     | Command::Power
     async fn history(&self) -> Result<HistoryList>          | Command::History
     async fn pattern(&self, pattern: Pattern) -> Result<()> | Command::Pattern
+    async fn info(&self) -> Result<Info>                    | Command::Info
 }
 
+#[derive(Debug, Serialize, Clone)]
 enum State {
     Idle,
     Pattern { pattern: Pattern },
@@ -239,6 +265,9 @@ impl InnerRunner {
 
                 let _ = resp.send(result);
             }
+            Command::Info(resp) => {
+                let _ = resp.send(Ok(Info::new(self)));
+            },
         }
 
         Ok(())

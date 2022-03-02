@@ -79,12 +79,12 @@ fn main() {
 }
 #+end_src
 ** Requests
-#+NAME: ip
++NAME: ip
 #+begin_src text
 0.0.0.0:8080
 #+end_src
 
-+NAME: ip
+#+NAME: ip
 #+begin_src text
 192.168.8.176:8080
 #+end_src
@@ -99,15 +99,15 @@ Content-Type: application/json
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://0.0.0.0:8080/api/pattern
+// POST http://192.168.8.176:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
-// x-frame-options: SAMEORIGIN
 // x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Sun, 27 Feb 2022 07:27:53 GMT
-// Request duration: 0.120338s
+// date: Wed, 02 Mar 2022 05:17:36 GMT
+// Request duration: 0.067324s
 #+END_SRC
 
 **** Moving Dot
@@ -147,8 +147,8 @@ Content-Type: application/json
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Sun, 27 Feb 2022 06:43:12 GMT
-// Request duration: 0.005708s
+// date: Wed, 02 Mar 2022 04:21:41 GMT
+// Request duration: 0.087087s
 #+END_SRC
 
 **** Solid
@@ -156,20 +156,20 @@ Content-Type: application/json
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "solid", "color":{"RGB":[0,0,70]}}
+{"pattern": "solid", "color":{"RGB":[10,0,100]}}
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
+// POST http://192.168.8.176:8080/api/pattern
 // HTTP/1.1 200 OK
-// POST http://0.0.0.0:8080/api/pattern
-// Request duration: 0.104534s
-// content-length: 0
-// date: Sun, 27 Feb 2022 07:31:03 GMT
-// permissions-policy: interest-cohort=()
 // server: Rocket
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Wed, 02 Mar 2022 05:19:53 GMT
+// Request duration: 0.177061s
 #+END_SRC
 
 **** Alternating
@@ -177,21 +177,23 @@ Content-Type: application/json
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "alternating", "colors":[{"color": {"RGB": [0,0,255]}, "count":2},{"color": {"RGB": [255,0,255]}, "count":2}]}
+{"pattern": "alternating", "colors":[{"color": {"RGB": [0,0,127]}, "count":2},{"color": {"RGB": [127,0,127]}, "count":2}]}
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://0.0.0.0:8080/api/pattern
+// POST http://192.168.8.176:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
-// x-frame-options: SAMEORIGIN
 // x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Sun, 27 Feb 2022 07:24:11 GMT
-// Request duration: 0.004524s
+// date: Wed, 02 Mar 2022 05:18:51 GMT
+// Request duration: 0.093826s
 #+END_SRC
+
+#+RESULTS:
 
 *** On
 #+begin_src restclient :noweb yes
@@ -263,50 +265,65 @@ GET http://<<ip>>/api/history
 [
   {
     "type": "pattern",
-    "pattern": "solid",
+    "pattern": "meteor",
+    "tick_rate": 100,
+    "tick_cycle": 150,
     "color": {
       "RGB": [
         255,
         0,
         255
       ]
-    }
-  },
-  {
-    "type": "pattern",
-    "pattern": "alternating",
-    "colors": [
-      {
-        "count": 2,
-        "color": {
-          "RGB": [
-            0,
-            0,
-            255
-          ]
-        }
-      },
-      {
-        "count": 2,
-        "color": {
-          "RGB": [
-            255,
-            0,
-            255
-          ]
-        }
-      }
-    ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
   }
 ]
-// GET http://0.0.0.0:8080/api/history
+// GET http://192.168.8.176:8080/api/history
 // HTTP/1.1 200 OK
 // content-type: application/json
 // server: Rocket
-// x-frame-options: SAMEORIGIN
 // x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
-// content-length: 198
-// date: Sun, 27 Feb 2022 07:25:38 GMT
-// Request duration: 0.110345s
+// content-length: 141
+// date: Wed, 02 Mar 2022 05:18:02 GMT
+// Request duration: 0.101031s
+#+END_SRC
+
+*** Info
+#+begin_src restclient :noweb yes
+GET http://<<ip>>/api/info
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>404 Not Found</title>
+</head>
+<body align="center">
+    <div role="main" align="center">
+        <h1>404: Not Found</h1>
+        <p>The requested resource could not be found.</p>
+        <hr />
+    </div>
+    <div role="contentinfo" align="center">
+        <small>Rocket</small>
+    </div>
+</body>
+</html>
+<!-- GET http://192.168.8.176:8080/api/info -->
+<!-- HTTP/1.1 404 Not Found -->
+<!-- content-type: text/html; charset=utf-8 -->
+<!-- server: Rocket -->
+<!-- x-content-type-options: nosniff -->
+<!-- x-frame-options: SAMEORIGIN -->
+<!-- permissions-policy: interest-cohort=() -->
+<!-- content-length: 383 -->
+<!-- date: Wed, 02 Mar 2022 05:17:54 GMT -->
+<!-- Request duration: 0.052334s -->
 #+END_SRC

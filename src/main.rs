@@ -32,6 +32,10 @@ async fn history(runner: &StateRunner) -> Result<Json<HistoryList>> {
     runner.history().await.map(Json).map_err(Json)
 }
 
+#[get("/info")]
+async fn info(runner: &StateRunner) -> Result<Json<Info>> {
+    runner.info().await.map(Json).map_err(Json)
+}
 #[launch]
 async fn rocket() -> _ {
     env_logger::init();
@@ -44,5 +48,5 @@ async fn rocket() -> _ {
 
     rocket::build()
         .manage(runner)
-        .mount("/api", routes![on, off, pattern, power, history])
+        .mount("/api", routes![on, off, pattern, power, history, info])
 }
