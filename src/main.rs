@@ -24,10 +24,7 @@ async fn power(runner: &StateRunner) -> Result<()> {
 
 #[post("/pattern", format = "json", data = "<pattern>")]
 async fn pattern(pattern: Json<Pattern>, runner: &StateRunner) -> Result<()> {
-    runner
-        .pattern(pattern.into_inner())
-        .await
-        .map_err(Json)
+    runner.pattern(pattern.into_inner()).await.map_err(Json)
 }
 
 #[get("/history")]
@@ -37,6 +34,8 @@ async fn history(runner: &StateRunner) -> Result<Json<HistoryList>> {
 
 #[launch]
 async fn rocket() -> _ {
+    env_logger::init();
+
     #[cfg(feature = "simulate")]
     let runner = LedRunner::new(150, 25);
 

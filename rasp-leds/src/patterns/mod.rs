@@ -14,6 +14,9 @@ pub use rainbow::*;
 pub mod meteor;
 pub use meteor::*;
 
+pub mod solid;
+pub use solid::*;
+
 #[derive(Debug, Clone)]
 #[enum_dispatch(RunnablePattern)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -22,6 +25,8 @@ pub enum Pattern {
     MovingDot(MovingDot),
     RainbowCycle(RainbowCycle),
     Meteor(Meteor),
+    Solid(Solid),
+    Alternating(Alternating)
 }
 
 #[enum_dispatch]

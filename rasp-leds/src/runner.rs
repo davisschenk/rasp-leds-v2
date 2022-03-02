@@ -1,5 +1,6 @@
 use crate::{error::Result, Controller, LedController, LedError, Pattern, RunnablePattern};
 use async_trait::async_trait;
+use log::info;
 use serde::Serialize;
 use std::{collections::VecDeque, thread, time::Duration};
 use tokio::runtime::{Builder, Runtime};
@@ -24,10 +25,10 @@ enum Command {
 impl Command {
     fn into_history(&self) -> History {
         match self {
-            Command::On { .. } => History::On,
-            Command::Off { .. } => History::Off,
-            Command::Power { .. } => History::Power,
-            Command::History { .. } => History::History,
+            Command::On(_) => History::On,
+            Command::Off(_) => History::Off,
+            Command::Power(_) => History::Power,
+            Command::History(_) => History::History,
             Command::Pattern(_, pattern) => History::Pattern(pattern.clone()),
         }
     }
@@ -68,6 +69,8 @@ impl LedRunner {
 
     #[cfg(feature = "hardware")]
     pub fn new(count: usize, pin: i32, brightness: u8) -> Self {
+        use log::warn;
+
         let (sender, receiver) = mpsc::channel(100);
 
         let runtime = Builder::new_current_thread().enable_all().build().unwrap();
@@ -77,7 +80,7 @@ impl LedRunner {
             let mut inner = InnerRunner::new(runtime, receiver, controller);
 
             loop {
-                inner.main_loop().unwrap();
+                inner.main_loop().map_err(|e| warn!("Main loop returned an error: {:?}", e))
             }
         });
 
@@ -104,7 +107,6 @@ macro_rules! send_message {
         #[async_trait]
         impl Runner for LedRunner {
             $(
-
                 async fn $name(&self, $($param: $typ),*) $( -> $ret)? {
                     let (resp, recv) = oneshot::channel();
 
@@ -118,11 +120,12 @@ macro_rules! send_message {
         }
     }
 }
+
 send_message! {
-    async fn on(&self) -> Result<()> | Command::On
-    async fn off(&self) -> Result<()> | Command::Off
-    async fn power(&self) -> Result<()> | Command::Power
-    async fn history(&self) -> Result<HistoryList> | Command::History
+    async fn on(&self) -> Result<()>                        | Command::On
+    async fn off(&self) -> Result<()>                       | Command::Off
+    async fn power(&self) -> Result<()>                     | Command::Power
+    async fn history(&self) -> Result<HistoryList>          | Command::History
     async fn pattern(&self, pattern: Pattern) -> Result<()> | Command::Pattern
 }
 
@@ -187,6 +190,8 @@ impl InnerRunner {
         if let Command::Pattern(..) = command {
             self.history.push_front(command.into_history());
         }
+
+        info!("Recieved Commands: {:?}", command);
 
         match command {
             Command::On(resp) => {

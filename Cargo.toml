@@ -13,6 +13,7 @@ serde_json = "1.0"
 rocket = {version =  "0.5.0-rc.1", features = ["json"]}
 tokio = {version = "1.17.0", features = ["sync", "rt"]}
 async-trait = "0.1.52"
+env_logger = "0.9.0"
 
 [features]
 default = ["simulate"]
