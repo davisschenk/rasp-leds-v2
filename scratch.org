@@ -1,0 +1,312 @@
+#+TITLE: Rasp Leds V2
+#+AUTHOR: Davis Schenkenberger
+
+* Goals
+** TODO API Control
+*** Endpoints
+- Pattern
+- On/Off/Toggle
+- Command History?
+- Custom Pattern
+  Be able to set individual LEDs then add movements
+
+** DONE Hardware or Simulation based on feature
+** TODO Pattern [3/7]
+*** DONE Meteor
+*** DONE Moving Dot
+*** DONE Rainbow
+*** TODO Heart Rate
+Connecting to watch using ANT+
+*** TODO Timer
+*** TODO Alarm
+*** TODO Custom
+** TODO ENV File for settings
+** STRT Logging
+** DONE Error Handling
+*** DONE Fix json
+
+* Design
+** Parts
+*** [[file:src/controller/controller.rs::pub trait LedController {][Controller]]
+A higher level abstraction for controlling an LED Strip, whether on hardware or virtual
+*** Runner
+An abstraction that provides a way to control the led strip using
+*** Diagram
+#+begin_src dot :file temp.png
+digraph {
+    subgraph cluster_thread_one {
+        label="Webserver Thread";
+        req[label="Request"];
+        webserver[label="Server"];
+        webserver -> req;
+    }
+
+    subgraph cluster_thread_two {
+        label="Led Manager Thread";
+        resp[label="Response"];
+        main_loop[label="Main Loop"];
+        resp -> webserver;
+        main_loop -> main_loop;
+        main_loop -> resp;
+        req -> main_loop;
+    }
+
+}
+#+end_src
+
+#+RESULTS:
+[[file:temp.png]]
+
+* Scratch
+** Changing value in enum
+#+begin_src rust
+#[derive(Debug)]
+enum Stuff {
+    _Other,
+    Value { num: u64 },
+}
+
+fn main() {
+    let mut thing = Stuff::Value { num: 10 };
+
+    println!("First: {thing:?}");
+
+    if let Stuff::Value { ref mut num } = thing {
+        *num += 1;
+    }
+
+    println!("Second: {thing:?}");
+}
+#+end_src
+** Requests
+#+NAME: ip
+#+begin_src text
+0.0.0.0:8080
+#+end_src
+
++NAME: ip
+#+begin_src text
+192.168.8.176:8080
+#+end_src
+*** Patterns
+**** Meteor
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
+Content-Type: application/json
+
+{"pattern": "meteor", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]},"random_decay":true,"decay":32,"size":18}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 07:27:53 GMT
+// Request duration: 0.120338s
+#+END_SRC
+
+**** Moving Dot
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
+Content-Type: application/json
+
+{"pattern": "moving_dot", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]}}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// permissions-policy: interest-cohort=()
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:58:20 GMT
+// Request duration: 0.075043s
+#+END_SRC
+**** Rainbow
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
+Content-Type: application/json
+
+{"pattern": "rainbow_cycle", "tick_rate":50}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 06:43:12 GMT
+// Request duration: 0.005708s
+#+END_SRC
+
+**** Solid
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
+Content-Type: application/json
+
+{"pattern": "solid", "color":{"RGB":[0,0,70]}}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// HTTP/1.1 200 OK
+// POST http://0.0.0.0:8080/api/pattern
+// Request duration: 0.104534s
+// content-length: 0
+// date: Sun, 27 Feb 2022 07:31:03 GMT
+// permissions-policy: interest-cohort=()
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+#+END_SRC
+
+**** Alternating
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/pattern
+Content-Type: application/json
+
+{"pattern": "alternating", "colors":[{"color": {"RGB": [0,0,255]}, "count":2},{"color": {"RGB": [255,0,255]}, "count":2}]}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/pattern
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Sun, 27 Feb 2022 07:24:11 GMT
+// Request duration: 0.004524s
+#+END_SRC
+
+*** On
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/on
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "error": "no_history"
+}
+// POST http://0.0.0.0:8080/api/on
+// HTTP/1.1 200 OK
+// content-type: application/json
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 22
+// date: Sun, 27 Feb 2022 06:42:43 GMT
+// Request duration: 0.003249s
+#+END_SRC
+
+*** Off
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/off
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/off
+// HTTP/1.1 200 OK
+// server: Rocket
+// permissions-policy: interest-cohort=()
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// content-length: 0
+// date: Sun, 27 Feb 2022 05:49:32 GMT
+// Request duration: 0.028854s
+#+END_SRC
+
+*** Power
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/power
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/power
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// x-content-type-options: nosniff
+// content-length: 0
+// date: Sun, 27 Feb 2022 06:11:33 GMT
+// Request duration: 0.086523s
+#+END_SRC
+
+#+RESULTS:
+
+*** History
+#+begin_src restclient :noweb yes
+GET http://<<ip>>/api/history
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC js
+[
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "alternating",
+    "colors": [
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            0,
+            0,
+            255
+          ]
+        }
+      },
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            255,
+            0,
+            255
+          ]
+        }
+      }
+    ]
+  }
+]
+// GET http://0.0.0.0:8080/api/history
+// HTTP/1.1 200 OK
+// content-type: application/json
+// server: Rocket
+// x-frame-options: SAMEORIGIN
+// x-content-type-options: nosniff
+// permissions-policy: interest-cohort=()
+// content-length: 198
+// date: Sun, 27 Feb 2022 07:25:38 GMT
+// Request duration: 0.110345s
+#+END_SRC
