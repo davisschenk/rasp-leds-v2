@@ -14,11 +14,15 @@ rocket = {version =  "0.5.0-rc.1", features = ["json"]}
 tokio = {version = "1.17.0", features = ["sync", "rt"]}
 async-trait = "0.1.52"
 env_logger = "0.9.0"
+rspotify = {version = "0.11", features = ["client-ureq", "ureq-rustls-tls"], default-features = false}
+lazy_static = "1.4.0"
+log = "0.4.14"
 
 [features]
-default = ["simulate"]
+default = ["simulate", "spotify"]
 simulate = ["rasp-leds-hal/simulate", "rasp-leds-hal/serde"]
 hardware = ["rasp-leds-hal/hardware", "rasp-leds-hal/serde"]
+spotify = ["rasp-leds-hal/spotify"]
 
 [workspace]
 members = [

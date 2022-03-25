@@ -17,6 +17,12 @@ pub use meteor::*;
 pub mod solid;
 pub use solid::*;
 
+#[cfg(feature = "spotify")]
+pub mod spotify;
+
+#[cfg(feature = "spotify")]
+pub use spotify::*;
+
 #[derive(Debug, Clone)]
 #[enum_dispatch(RunnablePattern)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -26,7 +32,8 @@ pub enum Pattern {
     RainbowCycle(RainbowCycle),
     Meteor(Meteor),
     Solid(Solid),
-    Alternating(Alternating)
+    Alternating(Alternating),
+    PlayingColor(PlayingColor),
 }
 
 #[enum_dispatch]
@@ -54,4 +61,7 @@ pub trait RunnablePattern {
 
     /// User function for actually implementing tick behavior.
     fn tick(&mut self, tick: u64, controller: &mut Controller) -> Result<()>;
+
+    #[cfg(feature = "spotify")]
+    fn set_client(&mut self, client: rspotify::AuthCodeSpotify) {}
 }

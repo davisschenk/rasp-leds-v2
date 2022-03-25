@@ -1,9 +1,9 @@
 use std::iter::repeat;
 
-use crate::Color;
 use crate::controller::{Controller, LedController};
 use crate::error::Result;
 use crate::patterns::RunnablePattern;
+use crate::Color;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Solid {
-    color: Color
+    color: Color,
 }
 
 impl Solid {
@@ -36,13 +36,13 @@ impl RunnablePattern for Solid {
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct AlternatingColor {
     count: u8,
-    color: Color
+    color: Color,
 }
 
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Alternating {
-    colors: Vec<AlternatingColor>
+    colors: Vec<AlternatingColor>,
 }
 
 impl Alternating {

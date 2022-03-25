@@ -79,12 +79,12 @@ fn main() {
 }
 #+end_src
 ** Requests
-+NAME: ip
+#+NAME: ip
 #+begin_src text
 0.0.0.0:8080
 #+end_src
 
-#+NAME: ip
++NAME: ip
 #+begin_src text
 192.168.8.176:8080
 #+end_src
@@ -94,7 +94,7 @@ fn main() {
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "meteor", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]},"random_decay":true,"decay":32,"size":18}
+{"pattern": "meteor", "tick_rate":50,"tick_cycle":300,"color":{"RGB":[255,0,255]},"random_decay":true,"decay":32,"size":18}
 #+end_src
 
 #+RESULTS:
@@ -106,8 +106,8 @@ Content-Type: application/json
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Wed, 02 Mar 2022 05:17:36 GMT
-// Request duration: 0.067324s
+// date: Wed, 02 Mar 2022 05:42:52 GMT
+// Request duration: 0.257091s
 #+END_SRC
 
 **** Moving Dot
@@ -115,40 +115,40 @@ Content-Type: application/json
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "moving_dot", "tick_rate":100,"tick_cycle":150,"color":{"RGB":[255,0,255]}}
+{"pattern": "moving_dot", "tick_rate":0,"tick_cycle":300,"color":{"RGB":[255,0,255]}}
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://0.0.0.0:8080/api/pattern
+// POST http://192.168.8.176:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
-// permissions-policy: interest-cohort=()
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Sun, 27 Feb 2022 05:58:20 GMT
-// Request duration: 0.075043s
+// date: Wed, 02 Mar 2022 07:09:39 GMT
+// Request duration: 0.140983s
 #+END_SRC
 **** Rainbow
 #+begin_src restclient :noweb yes
 POST http://<<ip>>/api/pattern
 Content-Type: application/json
 
-{"pattern": "rainbow_cycle", "tick_rate":50}
+{"pattern": "rainbow_cycle", "tick_rate":0}
 #+end_src
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://0.0.0.0:8080/api/pattern
+// POST http://192.168.8.176:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Wed, 02 Mar 2022 04:21:41 GMT
-// Request duration: 0.087087s
+// date: Wed, 02 Mar 2022 07:09:55 GMT
+// Request duration: 0.099841s
 #+END_SRC
 
 **** Solid
@@ -168,8 +168,8 @@ Content-Type: application/json
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Wed, 02 Mar 2022 05:19:53 GMT
-// Request duration: 0.177061s
+// date: Wed, 02 Mar 2022 05:20:04 GMT
+// Request duration: 0.046697s
 #+END_SRC
 
 **** Alternating
@@ -182,18 +182,58 @@ Content-Type: application/json
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://192.168.8.176:8080/api/pattern
+// POST http://0.0.0.0:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
 // x-content-type-options: nosniff
-// x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
+// x-frame-options: SAMEORIGIN
 // content-length: 0
-// date: Wed, 02 Mar 2022 05:18:51 GMT
-// Request duration: 0.093826s
+// date: Thu, 03 Mar 2022 01:11:01 GMT
+// Request duration: 0.008452s
 #+END_SRC
 
 #+RESULTS:
+
+**** Spotify
+
+#+begin_src restclient :noweb yes
+POST http://<<ip>>/api/spotify
+Content-Type: application/json
+
+{"pattern": "playing_color", "tick_rate": 3000, "color": {"RGB": [255,0,255]}}
+#+end_src
+
+#+RESULTS:
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>422 Unprocessable Entity</title>
+</head>
+<body align="center">
+    <div role="main" align="center">
+        <h1>422: Unprocessable Entity</h1>
+        <p>The request was well-formed but was unable to be followed due to semantic errors.</p>
+        <hr />
+    </div>
+    <div role="contentinfo" align="center">
+        <small>Rocket</small>
+    </div>
+</body>
+</html>
+<!-- POST http://0.0.0.0:8080/api/spotify -->
+<!-- HTTP/1.1 422 Unprocessable Entity -->
+<!-- content-type: text/html; charset=utf-8 -->
+<!-- server: Rocket -->
+<!-- x-frame-options: SAMEORIGIN -->
+<!-- permissions-policy: interest-cohort=() -->
+<!-- x-content-type-options: nosniff -->
+<!-- content-length: 444 -->
+<!-- date: Fri, 25 Mar 2022 19:14:08 GMT -->
+<!-- Request duration: 0.007304s -->
+#+END_SRC
 
 *** On
 #+begin_src restclient :noweb yes
@@ -202,19 +242,15 @@ POST http://<<ip>>/api/on
 
 #+RESULTS:
 #+BEGIN_SRC js
-{
-  "error": "no_history"
-}
-// POST http://0.0.0.0:8080/api/on
+// POST http://192.168.8.176:8080/api/on
 // HTTP/1.1 200 OK
-// content-type: application/json
 // server: Rocket
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
-// content-length: 22
-// date: Sun, 27 Feb 2022 06:42:43 GMT
-// Request duration: 0.003249s
+// content-length: 0
+// date: Wed, 02 Mar 2022 08:21:23 GMT
+// Request duration: 0.147244s
 #+END_SRC
 
 *** Off
@@ -227,12 +263,12 @@ POST http://<<ip>>/api/off
 // POST http://0.0.0.0:8080/api/off
 // HTTP/1.1 200 OK
 // server: Rocket
-// permissions-policy: interest-cohort=()
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Sun, 27 Feb 2022 05:49:32 GMT
-// Request duration: 0.028854s
+// date: Thu, 03 Mar 2022 01:35:39 GMT
+// Request duration: 1.999769s
 #+END_SRC
 
 *** Power
@@ -242,15 +278,15 @@ POST http://<<ip>>/api/power
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://0.0.0.0:8080/api/power
+// POST http://192.168.8.176:8080/api/power
 // HTTP/1.1 200 OK
 // server: Rocket
+// x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
-// x-content-type-options: nosniff
 // content-length: 0
-// date: Sun, 27 Feb 2022 06:11:33 GMT
-// Request duration: 0.086523s
+// date: Wed, 02 Mar 2022 08:20:12 GMT
+// Request duration: 0.011554s
 #+END_SRC
 
 #+RESULTS:
@@ -263,6 +299,660 @@ GET http://<<ip>>/api/history
 #+RESULTS:
 #+BEGIN_SRC js
 [
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 0
+  },
+  {
+    "type": "pattern",
+    "pattern": "moving_dot",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "moving_dot",
+    "tick_rate": 0,
+    "tick_cycle": 150,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "moving_dot",
+    "tick_rate": 100,
+    "tick_cycle": 150,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 0
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 50,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 200,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 200,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 24,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 199,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 24,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 24,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 23,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 24,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 22,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 21,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 20,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 24,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 16,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 128,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": false,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 0,
+    "tick_cycle": 300,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 100,
+    "tick_cycle": 150,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 0
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 1000
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 1
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 2
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 2
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 2
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 4
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 5
+  },
+  {
+    "type": "pattern",
+    "pattern": "rainbow_cycle",
+    "tick_rate": 50
+  },
+  {
+    "type": "pattern",
+    "pattern": "meteor",
+    "tick_rate": 100,
+    "tick_cycle": 150,
+    "color": {
+      "RGB": [
+        255,
+        0,
+        255
+      ]
+    },
+    "random_decay": true,
+    "decay": 32,
+    "size": 18
+  },
+  {
+    "type": "pattern",
+    "pattern": "alternating",
+    "colors": [
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            0,
+            0,
+            127
+          ]
+        }
+      },
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            127,
+            0,
+            127
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "pattern",
+    "pattern": "alternating",
+    "colors": [
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            0,
+            0,
+            127
+          ]
+        }
+      },
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            127,
+            0,
+            127
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        10,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        0,
+        0,
+        100
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "solid",
+    "color": {
+      "RGB": [
+        0,
+        0,
+        70
+      ]
+    }
+  },
+  {
+    "type": "pattern",
+    "pattern": "alternating",
+    "colors": [
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            0,
+            0,
+            127
+          ]
+        }
+      },
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            127,
+            0,
+            127
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "pattern",
+    "pattern": "alternating",
+    "colors": [
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            0,
+            0,
+            255
+          ]
+        }
+      },
+      {
+        "count": 2,
+        "color": {
+          "RGB": [
+            255,
+            0,
+            255
+          ]
+        }
+      }
+    ]
+  },
   {
     "type": "pattern",
     "pattern": "meteor",
@@ -287,9 +977,9 @@ GET http://<<ip>>/api/history
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
-// content-length: 141
-// date: Wed, 02 Mar 2022 05:18:02 GMT
-// Request duration: 0.101031s
+// content-length: 5577
+// date: Wed, 02 Mar 2022 08:20:16 GMT
+// Request duration: 0.124821s
 #+END_SRC
 
 *** Info

@@ -66,7 +66,6 @@ impl LedController for Controller {
             self.data.fill(Color::RGB(0, 0, 0))
         }
 
-        self.controller.render().unwrap();
-        Ok(())
+        self.controller.render()
     }
 }

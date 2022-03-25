@@ -42,6 +42,10 @@ impl Color {
             ),
         }
     }
+
+    pub fn rand() -> Self {
+        Self::RGB(rand::random(), rand::random(), rand::random())
+    }
 }
 
 impl Into<u32> for Color {

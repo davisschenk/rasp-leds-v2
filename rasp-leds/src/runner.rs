@@ -7,6 +7,9 @@ use std::{collections::VecDeque, thread, time::Duration};
 use tokio::runtime::{Builder, Runtime};
 use tokio::sync::{mpsc, oneshot};
 
+#[cfg(feature = "spotify")]
+use crate::patterns::spotify::*;
+
 type Sender = mpsc::Sender<Command>;
 type Receiver = mpsc::Receiver<Command>;
 type Responder<T> = oneshot::Sender<Result<T>>;
@@ -21,7 +24,7 @@ enum Command {
     Power(Responder<()>),
     History(Responder<HistoryList>),
     Pattern(Responder<()>, Pattern),
-    Info(Responder<Info>)
+    Info(Responder<Info>),
 }
 
 impl Command {
@@ -52,20 +55,18 @@ pub enum History {
 pub struct Info {
     led_count: usize,
     current_state: State,
-    state: Vec<Color>
+    state: Vec<Color>,
 }
 
 impl Info {
     fn new(runner: &mut InnerRunner) -> Self {
-       Self {
-           led_count: runner.controller.get_count(),
-           current_state: runner.state.clone(),
-           state: runner.controller.get_data().clone()
-       }
+        Self {
+            led_count: runner.controller.get_count(),
+            current_state: runner.state.clone(),
+            state: runner.controller.get_data().clone(),
+        }
     }
 }
-
-
 
 pub struct LedRunner {
     sender: Sender,
@@ -83,7 +84,9 @@ impl LedRunner {
             let mut inner = InnerRunner::new(runtime, receiver, controller);
 
             loop {
-                inner.main_loop().map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
+                let _ = inner
+                    .main_loop()
+                    .map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
             }
         });
 
@@ -103,7 +106,9 @@ impl LedRunner {
             let mut inner = InnerRunner::new(runtime, receiver, controller);
 
             loop {
-                inner.main_loop().map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
+                let _ = inner
+                    .main_loop()
+                    .map_err(|e| error!("Led Runner Main Loop Error: {:?}", e));
             }
         });
 
@@ -267,7 +272,7 @@ impl InnerRunner {
             }
             Command::Info(resp) => {
                 let _ = resp.send(Ok(Info::new(self)));
-            },
+            }
         }
 
         Ok(())
