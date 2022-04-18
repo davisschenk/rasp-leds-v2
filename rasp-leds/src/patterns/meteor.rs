@@ -1,6 +1,6 @@
 use crate::color::Color;
 use crate::controller::{Controller, LedController};
-use crate::error::{LedError, Result};
+use crate::error::Result;
 use crate::patterns::RunnablePattern;
 use rand::Rng;
 

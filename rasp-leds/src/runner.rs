@@ -7,9 +7,6 @@ use std::{collections::VecDeque, thread, time::Duration};
 use tokio::runtime::{Builder, Runtime};
 use tokio::sync::{mpsc, oneshot};
 
-#[cfg(feature = "spotify")]
-use crate::patterns::spotify::*;
-
 type Sender = mpsc::Sender<Command>;
 type Receiver = mpsc::Receiver<Command>;
 type Responder<T> = oneshot::Sender<Result<T>>;
@@ -198,7 +195,7 @@ impl InnerRunner {
 
     fn tick_pattern(&mut self) -> Result<()> {
         if let State::Pattern { pattern } = &mut self.state {
-            pattern.start_tick(self.tick, &mut self.controller).unwrap();
+            pattern.start_tick(self.tick, &mut self.controller)?;
             self.tick += 1;
             thread::sleep(Duration::from_millis(pattern.tick_rate()))
         }

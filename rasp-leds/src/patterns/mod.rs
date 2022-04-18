@@ -33,6 +33,8 @@ pub enum Pattern {
     Meteor(Meteor),
     Solid(Solid),
     Alternating(Alternating),
+
+    #[cfg(feature = "spotify")]
     PlayingColor(PlayingColor),
 }
 
@@ -63,5 +65,5 @@ pub trait RunnablePattern {
     fn tick(&mut self, tick: u64, controller: &mut Controller) -> Result<()>;
 
     #[cfg(feature = "spotify")]
-    fn set_client(&mut self, client: rspotify::AuthCodeSpotify) {}
+    fn set_client(&mut self, _client: rspotify::AuthCodeSpotify) {}
 }

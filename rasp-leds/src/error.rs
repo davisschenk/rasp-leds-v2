@@ -1,5 +1,8 @@
-use serde::{Serialize, Serializer};
+use serde::Serialize;
 use thiserror::Error;
+
+#[cfg(feature = "spotify")]
+use serde::Serializer;
 
 #[cfg(feature = "spotify")]
 use rspotify::ClientError;
@@ -18,11 +21,13 @@ pub enum LedError {
     #[error("Pattern Error")]
     PatternError,
 
+    #[cfg(feature = "spotify")]
     #[error("Spotify Error")]
     #[serde(serialize_with = "serialize_debug")]
     SpotifyError(#[from] ClientError),
 }
 
+#[cfg(feature = "spotify")]
 fn serialize_debug<S, T>(error: &T, serializer: S) -> std::result::Result<S::Ok, S::Error>
 where
     S: Serializer,

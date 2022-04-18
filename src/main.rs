@@ -62,22 +62,27 @@ struct SpotifyResp {
     url: String
 }
 
+#[derive(Serialize)]
+enum SpotifyError {
+    NoAuth(SpotifyResp),
+    LedError(LedError)
+}
+
 #[cfg(feature = "spotify")]
 #[post("/spotify", data = "<pattern>", format = "json")]
-async fn spotify_pattern(runner: &StateRunner, client: &SpotifyClient, pattern: Json<Pattern>) -> std::result::Result<(), Json<SpotifyResp>> {
+async fn spotify_pattern(runner: &StateRunner, client: &SpotifyClient, pattern: Json<Pattern>) -> std::result::Result<(), Json<SpotifyError>> {
     use rspotify::clients::BaseClient;
 
 
-    let mut spotify = client.lock().unwrap().clone();
+    let spotify = client.lock().unwrap().clone();
 
     if (*spotify.get_token().lock().unwrap()).is_none() {
-        return Err(Json(SpotifyResp { url: spotify.get_authorize_url(false).unwrap()}))
+        return Err(Json(SpotifyError::NoAuth( SpotifyResp { url: spotify.get_authorize_url(false).unwrap()})))
     }
 
     let mut pattern = pattern.into_inner();
     pattern.set_client(spotify);
-    runner.pattern(pattern).await.map_err(Json);
-    Ok(())
+    runner.pattern(pattern).await.map_err(|x| Json(SpotifyError::LedError(x)))
 }
 
 #[cfg(feature = "spotify")]

@@ -140,15 +140,15 @@ Content-Type: application/json
 
 #+RESULTS:
 #+BEGIN_SRC js
-// POST http://192.168.8.176:8080/api/pattern
+// POST http://0.0.0.0:8080/api/pattern
 // HTTP/1.1 200 OK
 // server: Rocket
 // x-content-type-options: nosniff
 // x-frame-options: SAMEORIGIN
 // permissions-policy: interest-cohort=()
 // content-length: 0
-// date: Wed, 02 Mar 2022 07:09:55 GMT
-// Request duration: 0.099841s
+// date: Thu, 07 Apr 2022 05:14:08 GMT
+// Request duration: 0.822066s
 #+END_SRC
 
 **** Solid
@@ -189,8 +189,8 @@ Content-Type: application/json
 // permissions-policy: interest-cohort=()
 // x-frame-options: SAMEORIGIN
 // content-length: 0
-// date: Thu, 03 Mar 2022 01:11:01 GMT
-// Request duration: 0.008452s
+// date: Fri, 25 Mar 2022 19:54:08 GMT
+// Request duration: 0.006674s
 #+END_SRC
 
 #+RESULTS:
@@ -201,38 +201,20 @@ Content-Type: application/json
 POST http://<<ip>>/api/spotify
 Content-Type: application/json
 
-{"pattern": "playing_color", "tick_rate": 3000, "color": {"RGB": [255,0,255]}}
+{"pattern": "playing_color", "tick_rate": 1000, "color": {"RGB": [255,0,255]}}
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>422 Unprocessable Entity</title>
-</head>
-<body align="center">
-    <div role="main" align="center">
-        <h1>422: Unprocessable Entity</h1>
-        <p>The request was well-formed but was unable to be followed due to semantic errors.</p>
-        <hr />
-    </div>
-    <div role="contentinfo" align="center">
-        <small>Rocket</small>
-    </div>
-</body>
-</html>
-<!-- POST http://0.0.0.0:8080/api/spotify -->
-<!-- HTTP/1.1 422 Unprocessable Entity -->
-<!-- content-type: text/html; charset=utf-8 -->
-<!-- server: Rocket -->
-<!-- x-frame-options: SAMEORIGIN -->
-<!-- permissions-policy: interest-cohort=() -->
-<!-- x-content-type-options: nosniff -->
-<!-- content-length: 444 -->
-<!-- date: Fri, 25 Mar 2022 19:14:08 GMT -->
-<!-- Request duration: 0.007304s -->
+#+BEGIN_SRC js
+// POST http://0.0.0.0:8080/api/spotify
+// HTTP/1.1 200 OK
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 0
+// date: Thu, 07 Apr 2022 05:13:18 GMT
+// Request duration: 2.624325s
 #+END_SRC
 
 *** On
@@ -988,32 +970,1073 @@ GET http://<<ip>>/api/info
 #+end_src
 
 #+RESULTS:
-#+BEGIN_SRC html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>404 Not Found</title>
-</head>
-<body align="center">
-    <div role="main" align="center">
-        <h1>404: Not Found</h1>
-        <p>The requested resource could not be found.</p>
-        <hr />
-    </div>
-    <div role="contentinfo" align="center">
-        <small>Rocket</small>
-    </div>
-</body>
-</html>
-<!-- GET http://192.168.8.176:8080/api/info -->
-<!-- HTTP/1.1 404 Not Found -->
-<!-- content-type: text/html; charset=utf-8 -->
-<!-- server: Rocket -->
-<!-- x-content-type-options: nosniff -->
-<!-- x-frame-options: SAMEORIGIN -->
-<!-- permissions-policy: interest-cohort=() -->
-<!-- content-length: 383 -->
-<!-- date: Wed, 02 Mar 2022 05:17:54 GMT -->
-<!-- Request duration: 0.052334s -->
-#+END_SRC
+#+begin_example
+,#+BEGIN_SRC js
+{
+  "led_count": 150,
+  "current_state": "Idle",
+  "state": [
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "RGB": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
+// GET http://0.0.0.0:8080/api/info
+// HTTP/1.1 200 OK
+// content-type: application/json
+// server: Rocket
+// x-content-type-options: nosniff
+// x-frame-options: SAMEORIGIN
+// permissions-policy: interest-cohort=()
+// content-length: 2450
+// date: Mon, 04 Apr 2022 21:13:51 GMT
+// Request duration: 0.041681s
+,#+END_SRC
+#+end_example

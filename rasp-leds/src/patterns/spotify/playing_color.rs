@@ -1,13 +1,11 @@
 use super::super::RunnablePattern;
 use crate::controller::{Controller, LedController};
-use crate::error::{Result, LedError};
+use crate::error::{LedError, Result};
 use crate::Color;
-use rspotify::model::{CurrentPlaybackContext, Device, FullTrack};
 use rspotify::{
-    model::{PlayableItem, RepeatState, TrackId},
-    prelude::PlayableId,
+    model::{CurrentPlaybackContext, FullTrack, PlayableItem, TrackId},
     prelude::*,
-    scopes, AuthCodeSpotify, Config, Credentials, OAuth,
+    AuthCodeSpotify,
 };
 
 #[cfg(feature = "serde")]
@@ -36,8 +34,8 @@ impl RunnablePattern for PlayingColor {
         None
     }
 
-    fn tick(&mut self, tick: u64, controller: &mut Controller) -> Result<()> {
-        if let Some(spotify) = &self.spotify {
+    fn tick(&mut self, _tick: u64, controller: &mut Controller) -> Result<()> {
+        if self.spotify.is_some() {
             if !self.currently_playing()? {
                 self.color = Color::rand();
             }
@@ -64,6 +62,7 @@ impl RunnablePattern for PlayingColor {
             None => self.tick(raw_tick, leds),
         }
     }
+
     fn set_client(&mut self, client: AuthCodeSpotify) {
         self.spotify = Some(client);
     }
@@ -90,5 +89,4 @@ impl PlayingColor {
 
         Ok(false)
     }
-
 }
