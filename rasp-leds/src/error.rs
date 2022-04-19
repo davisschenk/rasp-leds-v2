@@ -7,6 +7,9 @@ use serde::Serializer;
 #[cfg(feature = "spotify")]
 use rspotify::ClientError;
 
+#[cfg(feature = "hardware")]
+use rs_ws281x::util::error::WS2811Error;
+
 pub type Result<T> = std::result::Result<T, LedError>;
 
 #[derive(Error, Debug, Serialize)]
@@ -25,6 +28,11 @@ pub enum LedError {
     #[error("Spotify Error")]
     #[serde(serialize_with = "serialize_debug")]
     SpotifyError(#[from] ClientError),
+
+    #[cfg(feature = "hardware")]
+    #[error("Hardware Error")]
+    #[serde(serialize_with = "serialize_debug")]
+    LedStripError(#[from] WS2811Error)
 }
 
 #[cfg(feature = "spotify")]
